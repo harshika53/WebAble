@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Clock, ArrowUpRight, ChevronRight } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import { formatDistanceToNow } from "date-fns";
+
 
 // Mock data for recent scans
 const recentScans = [
