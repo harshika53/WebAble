@@ -23,7 +23,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <CheckCircle2 className="h-8 w-8 text-primary-600" />
-              <span className="text-xl font-bold text-gray-900">AccessibilityAnalyzer</span>
+              <span className="text-xl font-bold text-gray-900">WebAble</span>
             </Link>
           </div>
 
