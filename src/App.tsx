@@ -14,7 +14,7 @@ const App = () => {
     <BrowserRouter>
       <Navbar />
       <div className="text-center mt-10">
-        <h1 className="text-2xl font-bold">Accessibility Analyzer</h1>
+        <h1 className="text-2xl font-bold">WebAble</h1>
       </div>
       <Routes>
         <Route index element={<Dashboard />} />
