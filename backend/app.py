@@ -1,10 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import pymongo
 import uuid
 import os
+import json
+import subprocess
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
@@ -16,11 +22,20 @@ db = mongo_client["accessibility_analyzer"]
 scans_collection = db["scans"]
 users_collection = db["users"]
 
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to Accessibility Analyzer API"}), 200
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.static_folder, 'favicon.svg', mimetype='image/svg+xml')
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "The requested resource was not found"}), 404
+
 @app.route('/api/signup', methods=['POST'])
 def signup():
-    """
-    Endpoint for user registration
-    """
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
@@ -41,9 +56,6 @@ def signup():
 
 @app.route('/api/signin', methods=['POST'])
 def signin():
-    """
-    Endpoint for user login
-    """
     data = request.get_json()
     email = data.get("email")
     password = data.get("password")
@@ -56,16 +68,12 @@ def signin():
 
 @app.route('/api/scan', methods=['POST'])
 def scan_url():
-    """
-    Endpoint to initiate a website accessibility scan
-    """
     data = request.get_json()
     url = data.get('url')
 
     if not url:
         return jsonify({"error": "URL is required"}), 400
 
-    # Ensure URL has proper format
     if not url.startswith(('http://', 'https://')):
         url = f"https://{url}"
 
@@ -93,9 +101,6 @@ def scan_url():
 
 @app.route('/api/reports/<scan_id>', methods=['GET'])
 def get_report(scan_id):
-    """
-    Retrieve a specific scan report by ID
-    """
     scan = scans_collection.find_one({"id": scan_id})
 
     if not scan:
@@ -106,9 +111,6 @@ def get_report(scan_id):
 
 @app.route('/api/reports', methods=['GET'])
 def get_reports():
-    """
-    Get a list of all scan reports
-    """
     limit = int(request.args.get('limit', 10))
     skip = int(request.args.get('skip', 0))
 
@@ -119,10 +121,6 @@ def get_reports():
     return jsonify(scans)
 
 def run_accessibility_scan(url):
-    """
-    Mock function to simulate accessibility scan
-    Replace with actual calls to Lighthouse and axe-core if needed
-    """
     lighthouse_score = 75
     axe_results = {
         "violations": [
