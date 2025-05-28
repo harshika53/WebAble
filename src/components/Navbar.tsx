@@ -3,41 +3,18 @@ import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, CheckCircle2 } from 'lucide-react';
 import { cn } from '../utils/cn';
 
-const Navbar = () => {
+export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   const navItems = [
     { to: '/', label: 'Dashboard' },
     { to: '/scan', label: 'New Scan' },
     { to: '/history', label: 'History' }
   ];
-
-  const handleLogin = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (res.ok) {
-        const data = await res.json();
-        localStorage.setItem('token', data.token);
-        alert('Login successful!');
-        setShowLogin(false);
-      } else {
-        alert('Invalid credentials');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('Something went wrong');
-    }
-  };
 
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
@@ -67,12 +44,7 @@ const Navbar = () => {
                 {item.label}
               </NavLink>
             ))}
-            <button
-              onClick={() => setShowLogin(true)}
-              className="btn btn-primary"
-            >
-              Sign In
-            </button>
+            <button className="btn btn-primary">Sign In</button>
           </nav>
 
           {/* Mobile menu button */}
@@ -107,56 +79,16 @@ const Navbar = () => {
                   {item.label}
                 </NavLink>
               ))}
-              <button
+              <button 
                 className="btn btn-primary mx-3"
-                onClick={() => {
-                  setShowLogin(true);
-                  setIsMenuOpen(false);
-                }}
+                onClick={() => setIsMenuOpen(false)}
               >
                 Sign In
               </button>
             </nav>
           </div>
         )}
-
-        {/* Login Modal */}
-        {showLogin && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-md w-80 shadow-lg">
-              <h2 className="text-lg font-bold mb-4">Sign In</h2>
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full mb-3 p-2 border rounded"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full mb-3 p-2 border rounded"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              <button
-                onClick={handleLogin}
-                className="w-full bg-blue-500 text-white py-2 rounded"
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setShowLogin(false)}
-                className="w-full mt-2 text-gray-500 underline"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </header>
   );
 };
-
-export default Navbar;
