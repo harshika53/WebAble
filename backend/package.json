@@ -1,0 +1,14 @@
+{
+  "name": "accessibility-analyzer-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "lighthouse": "^11.6.0",
+    "chrome-launcher": "^1.1.0",
+    "axe-core": "^4.8.4",
+    "puppeteer": "^22.4.1"
+  }
+}
