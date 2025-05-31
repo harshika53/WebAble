@@ -8,6 +8,7 @@ import os
 import json
 import subprocess
 from dotenv import load_dotenv
+import certifi
 
 # Load environment variables
 load_dotenv()
@@ -17,7 +18,11 @@ CORS(app)
 
 # MongoDB setup
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
-mongo_client = pymongo.MongoClient(MONGO_URI)
+mongo_client = pymongo.MongoClient(
+    MONGO_URI,
+    tls=True,
+    tlsCAFile=certifi.where()
+)
 db = mongo_client["accessibility_analyzer"]
 scans_collection = db["scans"]
 users_collection = db["users"]
@@ -34,6 +39,7 @@ def favicon():
 def not_found(error):
     return jsonify({"error": "The requested resource was not found"}), 404
 
+# ------------------ User Signup ------------------
 @app.route('/api/signup', methods=['POST'])
 def signup():
     data = request.get_json()
@@ -54,6 +60,7 @@ def signup():
 
     return jsonify({"message": "User registered successfully"}), 201
 
+# ------------------ User Signin ------------------
 @app.route('/api/signin', methods=['POST'])
 def signin():
     data = request.get_json()
@@ -66,6 +73,7 @@ def signin():
 
     return jsonify({"message": "Login successful", "email": email}), 200
 
+# ------------------ Accessibility Scan ------------------
 @app.route('/api/scan', methods=['POST'])
 def scan_url():
     data = request.get_json()
@@ -78,6 +86,7 @@ def scan_url():
         url = f"https://{url}"
 
     try:
+        # Run scan
         scan_results = run_accessibility_scan(url)
 
         scan_id = str(uuid.uuid4())
@@ -93,12 +102,14 @@ def scan_url():
         return jsonify({
             "id": scan_id,
             "url": url,
-            "message": "Scan completed successfully"
-        })
+            "message": "Scan completed successfully",
+            "results": scan_results
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# ------------------ Get Report by ID ------------------
 @app.route('/api/reports/<scan_id>', methods=['GET'])
 def get_report(scan_id):
     scan = scans_collection.find_one({"id": scan_id})
@@ -107,8 +118,9 @@ def get_report(scan_id):
         return jsonify({"error": "Scan not found"}), 404
 
     scan["_id"] = str(scan["_id"])
-    return jsonify(scan)
+    return jsonify(scan), 200
 
+# ------------------ Get All Reports ------------------
 @app.route('/api/reports', methods=['GET'])
 def get_reports():
     limit = int(request.args.get('limit', 10))
@@ -118,81 +130,67 @@ def get_reports():
     for scan in scans:
         scan["_id"] = str(scan["_id"])
 
-    return jsonify(scans)
+    return jsonify(scans), 200
 
+# ------------------ Subprocess: Run scan_service.js ------------------
 def run_accessibility_scan(url):
-    lighthouse_score = 75
-    axe_results = {
-        "violations": [
-            {
-                "id": "color-contrast",
-                "impact": "serious",
-                "description": "Elements must have sufficient color contrast",
-                "nodes": [{"html": "<button>Submit</button>", "target": [".nav-link"]}]
+    try:
+        process = subprocess.Popen(
+            ['node', 'scan_service.js', url],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        stdout, stderr = process.communicate()
+
+        if process.returncode != 0:
+            raise Exception(stderr.decode())
+
+        scan_results = json.loads(stdout.decode())
+        lighthouse_score = scan_results['lighthouse']['categories']['accessibility']['score'] * 100
+
+        return {
+            'score': round(lighthouse_score),
+            'metrics': {
+                'performance': round(scan_results['lighthouse']['categories']['performance']['score'] * 100),
+                'accessibility': round(lighthouse_score),
+                'bestPractices': round(scan_results['lighthouse']['categories']['best-practices']['score'] * 100),
+                'seo': round(scan_results['lighthouse']['categories']['seo']['score'] * 100)
             },
-            {
-                "id": "image-alt",
-                "impact": "critical",
-                "description": "Images must have alternate text",
-                "nodes": [{"html": "<img src='logo.png'>", "target": [".logo-img"]}]
-            }
-        ]
-    }
-
-    results = {
-        "score": lighthouse_score,
-        "metrics": {
-            "performance": 85,
-            "accessibility": lighthouse_score,
-            "bestPractices": 90,
-            "seo": 88
-        },
-        "issues": process_axe_violations(axe_results["violations"]),
-        "issuesBySeverity": {
-            "critical": 1,
-            "serious": 1,
-            "moderate": 0,
-            "minor": 0
+            'issues': process_axe_results(scan_results['axe']),
+            'issuesBySeverity': count_issues_by_severity(scan_results['axe'])
         }
-    }
 
-    return results
+    except Exception as e:
+        print("Scan Error:", str(e))
+        raise
 
-def process_axe_violations(violations):
+def process_axe_results(axe_results):
     issues = []
-
-    for violation in violations:
-        affected_elements = []
-        for node in violation["nodes"]:
-            affected_elements.extend(node["target"])
-
-        issue = {
-            "id": violation["id"],
-            "title": violation["id"].replace("-", " ").title(),
-            "description": violation["description"],
-            "impact": violation["impact"],
-            "wcagCriteria": get_wcag_criteria(violation["id"]),
-            "affectedElements": affected_elements,
-            "recommendation": get_recommendation(violation["id"])
-        }
-
-        issues.append(issue)
-
+    for violation in axe_results.get('violations', []):
+        issues.append({
+            'id': violation['id'],
+            'title': violation['help'],
+            'description': violation['description'],
+            'impact': violation['impact'],
+            'wcagCriteria': violation.get('tags', []),
+            'affectedElements': [node['html'] for node in violation['nodes']],
+            'recommendation': violation.get('helpUrl', '')
+        })
     return issues
 
-def get_wcag_criteria(violation_id):
-    criteria_map = {
-        "color-contrast": "1.4.3 Contrast (Minimum) (Level AA)",
-        "image-alt": "1.1.1 Non-text Content (Level A)",
+def count_issues_by_severity(axe_results):
+    counts = {
+        'critical': 0,
+        'serious': 0,
+        'moderate': 0,
+        'minor': 0
     }
-    return criteria_map.get(violation_id, "Unknown WCAG criteria")
+    for violation in axe_results.get('violations', []):
+        impact = violation.get('impact')
+        if impact in counts:
+            counts[impact] += 1
+    return counts
 
-def get_recommendation(violation_id):
-    recommendation_map = {
-        "color-contrast": "Ensure text has sufficient contrast against its background, at least 4.5:1 for normal text and 3:1 for large text.",
-        "image-alt": "Add descriptive alt text to images that convey information. Use empty alt attributes for decorative images.",
-    }
-    return recommendation_map.get(violation_id, "Fix this accessibility issue following WCAG guidelines.")
-
+# ------------------ Run Server ------------------
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
