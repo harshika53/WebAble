@@ -8,44 +8,64 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  // Add timeout and error handling
-  timeout: 30000,
-  withCredentials: true,
+  timeout: 300000, // 5 minutes for scanning operations
+  withCredentials: false, // Set to true only if you need cookies
 });
 
 // Add response interceptor for error handling
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('API Response:', response.data);
+    return response;
+  },
   (error) => {
     if (error.response) {
-      // Server responded with error
-      console.error('API Error:', error.response.data);
+      console.error('API Error Response:', error.response.data);
+      console.error('Status:', error.response.status);
     } else if (error.request) {
-      // Request made but no response
-      console.error('Network Error:', error.request);
+      console.error('Network Error - No Response:', error.request);
     } else {
-      // Something else happened
-      console.error('Error:', error.message);
+      console.error('Request Setup Error:', error.message);
     }
     return Promise.reject(error);
   }
 );
 
+// Define error interface for better type safety
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+    status?: number;
+  };
+  message?: string;
+}
+
 export const scanWebsite = async (url: string): Promise<ScanResult> => {
   try {
+    console.log('Scanning URL:', url);
     const response = await api.post('/scan', { url });
+    console.log('Scan Response:', response.data);
     return response.data;
-  } catch {
-    throw new Error('Failed to scan website. Please try again later.');
+  } catch (error: unknown) {
+    console.error('Scan Error:', error);
+    const apiError = error as ApiError;
+    const errorMessage = apiError.response?.data?.message || 'Failed to scan website. Please try again later.';
+    throw new Error(errorMessage);
   }
 };
 
 export const getReport = async (id: string): Promise<ScanResult> => {
   try {
+    console.log('Fetching report for ID:', id);
     const response = await api.get(`/reports/${id}`);
     return response.data;
-  } catch {
-    throw new Error('Failed to fetch report. Please try again later.');
+  } catch (error: unknown) {
+    console.error('Get Report Error:', error);
+    const apiError = error as ApiError;
+    const errorMessage = apiError.response?.data?.message || 'Failed to fetch report. Please try again later.';
+    throw new Error(errorMessage);
   }
 };
 
@@ -53,15 +73,46 @@ export const getReports = async (limit = 10, skip = 0): Promise<ScanResult[]> =>
   try {
     const response = await api.get(`/reports?limit=${limit}&skip=${skip}`);
     return response.data;
-  } catch {
-    throw new Error('Failed to fetch reports. Please try again later.');
+  } catch (error: unknown) {
+    console.error('Get Reports Error:', error);
+    const apiError = error as ApiError;
+    const errorMessage = apiError.response?.data?.message || 'Failed to fetch reports. Please try again later.';
+    throw new Error(errorMessage);
   }
 };
 
-export const fetchReportById = async (id: string | undefined) => {
-  const response = await fetch(`http://localhost:5000/get-report/${id}`);
-  if (!response.ok) {
-    throw new Error('Failed to fetch report');
+export const getRecentScans = async (limit = 10): Promise<ScanResult[]> => {
+  try {
+    const response = await api.get(`/recent-scans?limit=${limit}`);
+    return response.data;
+  } catch (error: unknown) {
+    console.error('Get Recent Scans Error:', error);
+    const apiError = error as ApiError;
+    const errorMessage = apiError.response?.data?.message || 'Failed to fetch recent scans. Please try again later.';
+    throw new Error(errorMessage);
   }
-  return response.json();
+};
+
+// Alternative endpoint for getting scan reports
+export const getScanReport = async (id: string): Promise<ScanResult> => {
+  try {
+    const response = await api.get(`/scan-report/${id}`);
+    return response.data;
+  } catch (error: unknown) {
+    console.error('Get Scan Report Error:', error);
+    const apiError = error as ApiError;
+    const errorMessage = apiError.response?.data?.message || 'Failed to fetch scan report. Please try again later.';
+    throw new Error(errorMessage);
+  }
+};
+
+// Health check function
+export const checkHealth = async (): Promise<boolean> => {
+  try {
+    const response = await api.get('/health');
+    return response.status === 200;
+  } catch (error) {
+    console.error('Health Check Failed:', error);
+    return false;
+  }
 };
