@@ -57,3 +57,11 @@ export const getReports = async (limit = 10, skip = 0): Promise<ScanResult[]> =>
     throw new Error('Failed to fetch reports. Please try again later.');
   }
 };
+
+export const fetchReportById = async (id: string | undefined) => {
+  const response = await fetch(`http://localhost:5000/get-report/${id}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch report');
+  }
+  return response.json();
+};
