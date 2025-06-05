@@ -1,78 +1,103 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Clock, ArrowUpRight, ChevronRight } from 'lucide-react';
 import { formatDistanceToNow } from "date-fns";
 
-
-// Mock data for recent scans
-const recentScans = [
-  {
-    id: 'scan123',
-    url: 'example.com',
-    date: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    score: 86
-  },
-  {
-    id: 'scan456',
-    url: 'accessibility-demo.org',
-    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
-    score: 68
-  },
-  {
-    id: 'scan789',
-    url: 'web-standards.net',
-    date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    score: 92
-  }
-];
+type Scan = {
+  _id: string;
+  url: string;
+  date: string;
+  score: number;
+};
 
 const RecentScansSection = () => {
   const navigate = useNavigate();
-  
+  const [recentScans, setRecentScans] = useState<Scan[]>([]);
+  const [loading, setLoading] = useState(true);
+
   // Get score color based on value
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-success-500 bg-success-50';
-    if (score >= 75) return 'text-primary-500 bg-primary-50';
-    if (score >= 50) return 'text-warning-500 bg-warning-50';
-    return 'text-error-500 bg-error-50';
+    if (score >= 90) return 'text-green-600 bg-green-100';
+    if (score >= 75) return 'text-blue-600 bg-blue-100';
+    if (score >= 50) return 'text-yellow-600 bg-yellow-100';
+    return 'text-red-600 bg-red-100';
+  };
+
+  useEffect(() => {
+    const fetchRecentScans = async () => {
+      try {
+        // Import the API function at the top of file
+        // import { getRecentScans } from '../services/api';
+        const data = await fetch('http://localhost:5000/api/recent-scans')
+          .then(res => {
+            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            return res.json();
+          });
+        
+        setRecentScans(data);
+      } catch (err) {
+        console.error("Error fetching recent scans:", err);
+        // You can add toast notification here
+        setRecentScans([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecentScans();
+  }, []);
+
+  const handleScanClick = (scan: Scan) => {
+    // Navigate to report page with scan ID and URL as query parameters
+    navigate(`/report/${scan._id}?url=${encodeURIComponent(scan.url)}`);
+  };
+
+  const handleNewScan = () => {
+    navigate('/scan');
   };
 
   return (
     <div className="mt-12">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Recent Scans
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900">Recent Scans</h2>
         <button 
-          className="text-sm font-medium text-primary-600 hover:text-primary-700 flex items-center"
+          className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center transition-colors"
           onClick={() => navigate('/history')}
         >
           View all <ChevronRight className="h-4 w-4 ml-1" />
         </button>
       </div>
-      
-      {recentScans.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+
+      {loading ? (
+        <div className="flex items-center justify-center p-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          <p className="text-gray-500 ml-3">Loading recent scans...</p>
+        </div>
+      ) : recentScans.length > 0 ? (
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
           <ul className="divide-y divide-gray-200">
             {recentScans.map((scan) => (
-              <li key={scan.id}>
+              <li key={scan._id}>
                 <button
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
-                  onClick={() => navigate(`/report/${scan.id}`)}
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 text-left"
+                  onClick={() => handleScanClick(scan)}
                 >
-                  <div className="flex items-center space-x-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
+                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
                       <ExternalLink className="h-5 w-5 text-gray-500" />
                     </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-sm font-medium text-gray-900">{scan.url}</span>
+                    <div className="flex flex-col items-start min-w-0 flex-1">
+                      <span className="text-sm font-medium text-gray-900 truncate w-full" title={scan.url}>
+                        {scan.url}
+                      </span>
                       <div className="flex items-center text-xs text-gray-500 mt-1">
-                        <Clock className="h-3.5 w-3.5 mr-1" />
-                        {formatDistanceToNow(scan.date, { addSuffix: true })}
+                        <Clock className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
+                        <span>{formatDistanceToNow(new Date(scan.date), { addSuffix: true })}</span>
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="flex items-center">
+
+                  <div className="flex items-center ml-4">
                     <div className={`flex items-center justify-center rounded-full ${getScoreColor(scan.score)} h-8 w-8 mr-2`}>
                       <span className="text-xs font-medium">{scan.score}</span>
                     </div>
@@ -84,13 +109,17 @@ const RecentScansSection = () => {
           </ul>
         </div>
       ) : (
-        <div className="rounded-lg border border-gray-200 bg-white p-6 text-center">
-          <p className="text-gray-500">No recent scans found. Start by analyzing a website.</p>
+        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
+            <ExternalLink className="h-6 w-6 text-gray-400" />
+          </div>
+          <p className="text-gray-500 text-lg mb-2">No recent scans found</p>
+          <p className="text-gray-400 text-sm mb-6">Start by analyzing a website to see your scan history here.</p>
           <button 
-            className="mt-4 btn btn-primary"
-            onClick={() => navigate('/scan')}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
+            onClick={handleNewScan}
           >
-            New Scan
+            Start New Scan
           </button>
         </div>
       )}
