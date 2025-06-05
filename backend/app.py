@@ -10,7 +10,7 @@ import subprocess
 from dotenv import load_dotenv
 import certifi
 import re
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 
 # Load environment variables
 load_dotenv()
@@ -165,17 +165,26 @@ def scan_url():
         return jsonify({"error": f"Scan failed: {str(e)}"}), 500
 
 # ------------------ Get Report by ID ------------------
-@app.route('/api/reports/<scan_id>', methods=['GET'])
-def get_report(scan_id):
+@app.route('/api/reports/<path:identifier>', methods=['GET'])
+def get_report(identifier):
     try:
-        scan = scans_collection.find_one({"id": scan_id})
+        print(f"Received identifier: {identifier}")
+        
+        # Check if it's URL or scan_id
+        if identifier.startswith('http'):
+            # It's a URL, find by URL
+            decoded_url = unquote(identifier)
+            print(f"Decoded URL: {decoded_url}")
+            scan = scans_collection.find_one({"url": decoded_url})
+        else:
+            # It's a scan_id
+            print(f"Looking for scan_id: {identifier}")
+            scan = scans_collection.find_one({"id": identifier})
 
         if not scan:
             return jsonify({"error": "Scan not found"}), 404
 
-        # Convert ObjectId to string
         scan["_id"] = str(scan["_id"])
-        
         return jsonify(scan), 200
 
     except Exception as e:
@@ -183,18 +192,25 @@ def get_report(scan_id):
         return jsonify({"error": "Failed to retrieve report"}), 500
 
 # ------------------ Get Scan Report by ID (Alternative Endpoint) ------------------
-@app.route('/api/scan-report/<scan_id>', methods=['GET'])
-def get_scan_report(scan_id):
+@app.route('/api/scan-report/<path:identifier>', methods=['GET'])
+def get_scan_report(identifier):
     """Alternative endpoint for backward compatibility with frontend"""
     try:
-        scan = scans_collection.find_one({"id": scan_id})
+        print(f"Scan-report received identifier: {identifier}")
+        
+        # Check if it's URL or scan_id
+        if identifier.startswith('http'):
+            decoded_url = unquote(identifier)
+            print(f"Scan-report decoded URL: {decoded_url}")
+            scan = scans_collection.find_one({"url": decoded_url})
+        else:
+            print(f"Scan-report looking for scan_id: {identifier}")
+            scan = scans_collection.find_one({"id": identifier})
 
         if not scan:
             return jsonify({"error": "Scan not found"}), 404
 
-        # Convert ObjectId to string
         scan["_id"] = str(scan["_id"])
-        
         return jsonify(scan), 200
 
     except Exception as e:
