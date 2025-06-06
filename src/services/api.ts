@@ -9,7 +9,7 @@ const api = axios.create({
     'Content-Type': 'application/json',
   },
   timeout: 300000, // 5 minutes for scanning operations
-  withCredentials: false, // Set to true only if you need cookies
+  withCredentials: false,
 });
 
 // Add response interceptor for error handling
@@ -36,6 +36,7 @@ interface ApiError {
   response?: {
     data?: {
       message?: string;
+      error?: string;
     };
     status?: number;
   };
@@ -45,13 +46,17 @@ interface ApiError {
 export const scanWebsite = async (url: string): Promise<ScanResult> => {
   try {
     console.log('Scanning URL:', url);
+    // Fixed: Added /api prefix to match Flask backend
     const response = await api.post('/scan', { url });
     console.log('Scan Response:', response.data);
     return response.data;
   } catch (error: unknown) {
     console.error('Scan Error:', error);
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || 'Failed to scan website. Please try again later.';
+    const errorMessage = 
+      apiError.response?.data?.error || 
+      apiError.response?.data?.message || 
+      'Failed to scan website. Please try again later.';
     throw new Error(errorMessage);
   }
 };
@@ -64,7 +69,10 @@ export const getReport = async (id: string): Promise<ScanResult> => {
   } catch (error: unknown) {
     console.error('Get Report Error:', error);
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || 'Failed to fetch report. Please try again later.';
+    const errorMessage = 
+      apiError.response?.data?.error || 
+      apiError.response?.data?.message || 
+      'Failed to fetch report. Please try again later.';
     throw new Error(errorMessage);
   }
 };
@@ -76,7 +84,10 @@ export const getReports = async (limit = 10, skip = 0): Promise<ScanResult[]> =>
   } catch (error: unknown) {
     console.error('Get Reports Error:', error);
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || 'Failed to fetch reports. Please try again later.';
+    const errorMessage = 
+      apiError.response?.data?.error || 
+      apiError.response?.data?.message || 
+      'Failed to fetch reports. Please try again later.';
     throw new Error(errorMessage);
   }
 };
@@ -88,7 +99,10 @@ export const getRecentScans = async (limit = 10): Promise<ScanResult[]> => {
   } catch (error: unknown) {
     console.error('Get Recent Scans Error:', error);
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || 'Failed to fetch recent scans. Please try again later.';
+    const errorMessage = 
+      apiError.response?.data?.error || 
+      apiError.response?.data?.message || 
+      'Failed to fetch recent scans. Please try again later.';
     throw new Error(errorMessage);
   }
 };
@@ -101,7 +115,10 @@ export const getScanReport = async (id: string): Promise<ScanResult> => {
   } catch (error: unknown) {
     console.error('Get Scan Report Error:', error);
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || 'Failed to fetch scan report. Please try again later.';
+    const errorMessage = 
+      apiError.response?.data?.error || 
+      apiError.response?.data?.message || 
+      'Failed to fetch scan report. Please try again later.';
     throw new Error(errorMessage);
   }
 };
@@ -114,5 +131,22 @@ export const checkHealth = async (): Promise<boolean> => {
   } catch (error) {
     console.error('Health Check Failed:', error);
     return false;
+  }
+};
+
+// Additional utility functions for better error handling
+export const testConnection = async (): Promise<{ success: boolean; message: string }> => {
+  try {
+    const response = await api.get('/health');
+    return {
+      success: true,
+      message: `Connected to API. Status: ${response.data.status}`
+    };
+  } catch (error) {
+    const apiError = error as ApiError;
+    return {
+      success: false,
+      message: `Connection failed: ${apiError.message || 'Unknown error'}`
+    };
   }
 };

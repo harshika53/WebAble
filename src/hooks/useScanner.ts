@@ -8,25 +8,38 @@ export const useScanner = () => {
   const [result, setResult] = useState<ScanResult | null>(null);
 
   const scan = async (url: string): Promise<ScanResult | null> => {
-    try {
-      setIsScanning(true);
-      setError(null);
-      console.log('Starting scan for:', url);
-      
-      const scanResult = await scanWebsite(url);
-      console.log('Scan completed:', scanResult);
-      
-      setResult(scanResult);
-      return scanResult;
-    } catch (err) {
-      console.error('Scan failed:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred during the scan';
-      setError(errorMessage);
-      return null;
-    } finally {
-      setIsScanning(false);
+  try {
+    setIsScanning(true);
+    setError(null);
+    console.log('Starting scan for:', url);
+
+    const scanResult = await scanWebsite(url);
+    console.log('Initial scan result:', scanResult);
+    setResult(scanResult);
+
+    // Poll until scan is completed
+    const pollInterval = 3000; // 3 seconds
+    let currentResult = scanResult as ScanResult & { status: string; identifier: string };
+
+    while (currentResult.status === 'in_progress') {
+      await new Promise(resolve => setTimeout(resolve, pollInterval));
+
+      const updatedReport = await getReport(currentResult.identifier) as ScanResult & { status: string; identifier: string };
+      console.log('Polled report:', updatedReport);
+      setResult(updatedReport);
+      currentResult = updatedReport;
     }
-  };
+
+    return currentResult;
+  } catch (err) {
+    console.error('Scan failed:', err);
+    const errorMessage = err instanceof Error ? err.message : 'An error occurred during the scan';
+    setError(errorMessage);
+    return null;
+  } finally {
+    setIsScanning(false);
+  }
+};
 
   const fetchReport = async (id: string): Promise<ScanResult | null> => {
     try {

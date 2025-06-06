@@ -145,24 +145,49 @@ const ReportPage: React.FC = () => {
         
         // Priority 2: Use URL from query params to perform new scan
         if (urlFromQuery) {
-          console.log('Performing new scan for URL:', urlFromQuery);
-          const response: Response = await fetch(`http://localhost:5000/api/scan`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ url: urlFromQuery }),
-          });
+  console.log('Performing new scan for URL:', urlFromQuery);
+  const scanResponse = await fetch(`http://localhost:5000/api/scan`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url: urlFromQuery }),
+  });
 
-          if (response.ok) {
-            const data: ReportData = await response.json();
-            setReportData(data);
-            return;
-          } else {
-            const errorText = await response.text();
-            throw new Error(`Scan failed: ${response.status} - ${errorText}`);
-          }
+  if (!scanResponse.ok) {
+    const errorText = await scanResponse.text();
+    throw new Error(`Scan failed: ${scanResponse.status} - ${errorText}`);
+  }
+
+  const { scanId: newScanId } = await scanResponse.json();
+
+  if (!newScanId) {
+    throw new Error('Scan started but no scan ID returned.');
+  }
+
+  console.log('Scan started with ID:', newScanId);
+
+  // Poll every 5 seconds for scan result
+  const pollForResult = async (retries = 20) => {
+    for (let i = 0; i < retries; i++) {
+      const resultResponse = await fetch(`http://localhost:5000/api/scan-report/${newScanId}`);
+      if (resultResponse.ok) {
+        const resultData: ReportData = await resultResponse.json();
+        if (resultData.status === 'completed') {
+          setReportData(resultData);
+          return;
         }
+      }
+      // wait before retrying
+      await new Promise(res => setTimeout(res, 5000));
+    }
+    throw new Error('Scan did not complete in time.');
+  };
+
+  await pollForResult();
+  return;
+}
+
 
         // No scan ID or URL provided
         throw new Error('No scan ID or URL provided for report generation.');
