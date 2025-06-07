@@ -5,17 +5,20 @@ const { scanUrl } = require('./scan_service');
 const app = express();
 
 // Enhanced CORS configuration
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:3001'],
+const corsOptions = {
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:3001'
+  ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
-
-// Add OPTIONS handler for preflight requests
-app.options('*', cors());
 
 // Your existing scan endpoint
 app.post('/scan', async (req, res) => {
@@ -35,7 +38,9 @@ app.post('/scan', async (req, res) => {
   }
 });
 
-// Add GET endpoint for reports (based on your error logs)
+// This endpoint currently fetches a report by URL, not by scan ID.
+// If you want to support fetching by scan ID, you must implement scan result storage and lookup by ID.
+// Otherwise, make sure your frontend never calls this endpoint with a scan ID.
 app.get('/api/reports/:url', async (req, res) => {
   const url = decodeURIComponent(req.params.url);
   
