@@ -43,6 +43,11 @@ interface ApiError {
   message?: string;
 }
 
+// Utility to check if a string is a likely scan ID (MongoDB ObjectId or UUID)
+const isLikelyScanId = (value?: string) => {
+  return !!value && (/^[a-f\d]{24}$/i.test(value) || /^[\w\d-]{36}$/.test(value));
+};
+
 export const scanWebsite = async (url: string): Promise<ScanResult> => {
   try {
     console.log('Scanning URL:', url);
@@ -62,6 +67,9 @@ export const scanWebsite = async (url: string): Promise<ScanResult> => {
 };
 
 export const getReport = async (id: string): Promise<ScanResult> => {
+  if (!isLikelyScanId(id)) {
+    throw new Error('Invalid scan ID provided to getReport.');
+  }
   try {
     console.log('Fetching report for ID:', id);
     const response = await api.get(`/reports/${id}`);
@@ -109,6 +117,9 @@ export const getRecentScans = async (limit = 10): Promise<ScanResult[]> => {
 
 // Alternative endpoint for getting scan reports
 export const getScanReport = async (id: string): Promise<ScanResult> => {
+  if (!isLikelyScanId(id)) {
+    throw new Error('Invalid scan ID provided to getScanReport.');
+  }
   try {
     const response = await api.get(`/scan-report/${id}`);
     return response.data;
