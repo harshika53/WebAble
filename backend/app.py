@@ -153,10 +153,25 @@ def scan_url():
 
         return jsonify({
             "id": scan_id,
+            "scanId": scan_id,  # <-- Add this line for frontend compatibility
             "_id": str(result.inserted_id),
             "url": url,
+            "original_url": raw_url,      # The original input URL (before normalization)
+            "date": datetime.now().isoformat(),  # Date/time when the scan was performed
             "message": "Scan completed successfully",
-            "results": scan_results,
+            "results": {
+                "score": scan_results['score'],
+                "metrics": {
+                    "performance": scan_results['metrics']['performance'],
+                    "accessibility": scan_results['metrics']['accessibility'],
+                    "bestPractices": scan_results['metrics']['bestPractices'],
+                    "seo": scan_results['metrics']['seo']
+                },
+                "issues": scan_results['issues'],
+                "issuesBySeverity": scan_results['issuesBySeverity'],
+                "scanTime": scan_results['scanTime'],
+                "url": url
+            },
             "status": "completed"
         }), 200
 
