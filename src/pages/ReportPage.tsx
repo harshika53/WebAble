@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { AiOutlineFileDone, AiOutlineWarning, AiOutlineCloseCircle, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useScanner } from '../hooks/useScanner';
@@ -79,119 +79,128 @@ const ReportPage: React.FC = () => {
 
   // Use the scanner hook
   const { fetchReport } = useScanner();
+  const scanInProgress = useRef(false);
+  const lastScanId = useRef<string | null>(null);
+  const lastScannedUrl = useRef<string | null>(null);
+
+  const isLikelyScanId = (value?: string) => {
+    // Simple check: MongoDB ObjectId (24 hex chars) or UUID (36 chars with dashes)
+    return !!value && (/^[a-f\d]{24}$/i.test(value) || /^[\w\d-]{36}$/.test(value));
+  };
 
   useEffect(() => {
     const fetchScanResults = async () => {
+      if (scanInProgress.current) return;
+      scanInProgress.current = true;
       setLoading(true);
       setError(null);
 
       try {
-        // Get the scan ID from either scanId or id parameter
         const currentScanId = scanId || id;
 
-        // Priority 1: Use scan ID if available
-        if (currentScanId) {
-          console.log('Fetching report for ID:', currentScanId);
-          
-          try {
-            // Use the hook's fetchReport function first
-            const hookResult = await fetchReport(currentScanId);
-            if (hookResult) {
-              // Convert date to string if it's a Date object
-              const normalizedResult = {
-                ...hookResult,
-                date: hookResult.date instanceof Date ? hookResult.date.toISOString() : hookResult.date,
-              };
-              setReportData(normalizedResult);
-              return;
-            }
-          } catch (hookError) {
-            console.warn('Hook fetchReport failed:', hookError);
-            // Continue to fallback API calls
+        // If we have a scanId, fetch the report by scanId
+        if (isLikelyScanId(currentScanId)) {
+          if (lastScanId.current === currentScanId) {
+            scanInProgress.current = false;
+            setLoading(false);
+            return;
           }
+          lastScanId.current = currentScanId ?? null;
 
-          // Fallback to direct API calls if hook fails
-          let response: Response | null = null;
-          
-          try {
-            // Try scan-report endpoint first
-            response = await fetch(`http://localhost:5000/api/scan-report/${currentScanId}`);
-            
-            if (!response.ok) {
-              // Fallback to reports endpoint
-              response = await fetch(`http://localhost:5000/api/reports/${currentScanId}`);
-            }
-            
-            if (response.ok) {
-              const data: ReportData = await response.json();
-              setReportData(data);
-              return;
-            }
-          } catch (apiError) {
-            console.warn('API calls failed:', apiError);
-            // Try last fallback
+          // Only treat as scan ID if it matches expected format
+          if (isLikelyScanId(currentScanId)) {
+            console.log('Fetching report for scan ID:', currentScanId);
+
             try {
-              response = await fetch(`http://localhost:5000/api/reports/${currentScanId}`);
+              const hookResult = await fetchReport(currentScanId!);
+              if (hookResult) {
+                const normalizedResult = {
+                  ...hookResult,
+                  date: hookResult.date instanceof Date ? hookResult.date.toISOString() : hookResult.date,
+                };
+                setReportData(normalizedResult);
+                setLoading(false);
+                scanInProgress.current = false;
+                return;
+              }
+            } catch (hookError) {
+              console.warn('Hook fetchReport failed:', hookError);
+            }
+
+            let response: Response | null = null;
+            try {
+              response = await fetch(`http://localhost:5000/api/scan-report/${currentScanId}`);
+              if (!response.ok) {
+                response = await fetch(`http://localhost:5000/api/reports/${currentScanId}`);
+              }
               if (response.ok) {
                 const data: ReportData = await response.json();
                 setReportData(data);
+                setLoading(false);
+                scanInProgress.current = false;
                 return;
               }
-            } catch (finalError) {
-              console.error('All API attempts failed:', finalError);
+            } catch (apiError) {
+              console.warn('API calls failed:', apiError);
             }
           }
         }
-        
-        // Priority 2: Use URL from query params to perform new scan
-        if (urlFromQuery) {
-  console.log('Performing new scan for URL:', urlFromQuery);
-  const scanResponse = await fetch(`http://localhost:5000/api/scan`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ url: urlFromQuery }),
-  });
 
-  if (!scanResponse.ok) {
-    const errorText = await scanResponse.text();
-    throw new Error(`Scan failed: ${scanResponse.status} - ${errorText}`);
-  }
+        // If not a scan ID, treat as URL (from query or param)
+        const urlToScan = urlFromQuery || (!isLikelyScanId(currentScanId) ? currentScanId : '');
+        if (urlToScan) {
+          if (lastScannedUrl.current === urlToScan) {
+            scanInProgress.current = false;
+            setLoading(false);
+            return;
+          }
+          lastScannedUrl.current = urlToScan;
+          // Start scan
+          const scanResponse = await fetch(`http://localhost:5000/api/scan`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: urlToScan }),
+          });
 
-  const { scanId: newScanId } = await scanResponse.json();
+          if (!scanResponse.ok) {
+            const errorText = await scanResponse.text();
+            throw new Error(`Scan failed: ${scanResponse.status} - ${errorText}`);
+          }
 
-  if (!newScanId) {
-    throw new Error('Scan started but no scan ID returned.');
-  }
+          // Get scanId from response
+          const scanData = await scanResponse.json();
+          const newScanId = scanData.scanId || scanData.id;
+          if (!newScanId) {
+            throw new Error('Scan started but no scan ID returned.');
+          }
 
-  console.log('Scan started with ID:', newScanId);
+          // Update URL to include scanId (prevents repeated scans)
+          window.history.replaceState({}, '', `/report/${newScanId}`);
 
-  // Poll every 5 seconds for scan result
-  const pollForResult = async (retries = 20) => {
-    for (let i = 0; i < retries; i++) {
-      const resultResponse = await fetch(`http://localhost:5000/api/scan-report/${newScanId}`);
-      if (resultResponse.ok) {
-        const resultData: ReportData = await resultResponse.json();
-        if (resultData.status === 'completed') {
-          setReportData(resultData);
+          // Fetch the report by scanId
+          let resultData: ReportData | null = null;
+          const pollForResult = async (retries = 20) => {
+            for (let i = 0; i < retries; i++) {
+              const resultResponse = await fetch(`http://localhost:5000/api/scan-report/${newScanId}`);
+              if (resultResponse.ok) {
+                resultData = await resultResponse.json();
+                if (resultData && resultData.status === 'completed') {
+                  setReportData(resultData);
+                  setLoading(false);
+                  scanInProgress.current = false;
+                  return;
+                }
+              }
+              await new Promise(res => setTimeout(res, 5000));
+            }
+            throw new Error('Scan did not complete in time.');
+          };
+
+          await pollForResult();
           return;
         }
-      }
-      // wait before retrying
-      await new Promise(res => setTimeout(res, 5000));
-    }
-    throw new Error('Scan did not complete in time.');
-  };
 
-  await pollForResult();
-  return;
-}
-
-
-        // No scan ID or URL provided
-        throw new Error('No scan ID or URL provided for report generation.');
-
+        throw new Error('No valid scan ID or URL provided for report generation.');
       } catch (err: unknown) {
         console.error('Scan error:', err);
         if (err instanceof Error) {
@@ -202,10 +211,10 @@ const ReportPage: React.FC = () => {
         setReportData(null);
       } finally {
         setLoading(false);
+        scanInProgress.current = false;
       }
     };
 
-    // Only fetch if we have a scan ID or URL
     if (scanId || id || urlFromQuery) {
       fetchScanResults();
     } else {
@@ -387,33 +396,39 @@ const ReportPage: React.FC = () => {
           )}
 
           {/* Show results if available in different format */}
-          {reportData.results?.issues && reportData.results.issues.length > 0 && (
+          {reportData.results && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Found</h2>
-              <div className="space-y-3">
-                {reportData.results.issues.map((issue: ScanIssue, index: number) => (
-                  <div key={issue.id || index} className="border-l-4 border-red-400 pl-4 py-2">
-                    <div className="flex items-start space-x-3">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-gray-900">{issue.title || `Issue ${index + 1}`}</h3>
-                        <p className="text-gray-600 mt-1">
-                          {issue.description || 'No description available'}
-                        </p>
-                        {issue.severity && (
-                          <span className={`inline-block mt-2 px-2 py-1 text-xs rounded-full ${
-                            issue.severity === 'critical' ? 'bg-red-100 text-red-800' :
-                            issue.severity === 'high' ? 'bg-orange-100 text-orange-800' :
-                            issue.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
-                            {issue.severity}
-                          </span>
-                        )}
+              {reportData.results.issues && reportData.results.issues.length > 0 ? (
+                <div className="space-y-3">
+                  {reportData.results.issues.map((issue: ScanIssue, index: number) => (
+                    <div key={issue.id || index} className="border-l-4 border-red-400 pl-4 py-2">
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-gray-900">{issue.title || `Issue ${index + 1}`}</h3>
+                          <p className="text-gray-600 mt-1">
+                            {issue.description || 'No description available'}
+                          </p>
+                          {issue.severity && (
+                            <span className={`inline-block mt-2 px-2 py-1 text-xs rounded-full ${
+                              issue.severity === 'critical' ? 'bg-red-100 text-red-800' :
+                              issue.severity === 'high' ? 'bg-orange-100 text-orange-800' :
+                              issue.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {issue.severity}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-green-700 font-medium">
+                  No accessibility issues found!
+                </div>
+              )}
             </div>
           )}
 
