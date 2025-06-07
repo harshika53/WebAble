@@ -12,7 +12,8 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="scan" element={<ScanPage />} />
-        <Route path="report/:id" element={<ReportPage />} />
+        <Route path="report/:scanId" element={<ReportPage />} />
+        <Route path="report" element={<ReportPage />} />
         <Route path="history" element={<HistoryPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
