@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, CheckCircle2 } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,19 @@ export const Navbar = () => {
     { to: '/scan', label: 'New Scan' },
     { to: '/history', label: 'History' }
   ];
+
+  // Firebase Sign In handler
+  const handleSignIn = async () => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      // Optionally, handle post-sign-in logic here
+    } catch (error) {
+      // Optionally, handle errors here
+      console.error('Sign in error:', error);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
@@ -44,7 +58,7 @@ export const Navbar = () => {
                 {item.label}
               </NavLink>
             ))}
-            <button className="btn btn-primary">Sign In</button>
+            <button className="btn btn-primary" onClick={handleSignIn}>Sign In</button>
           </nav>
 
           {/* Mobile menu button */}
@@ -81,7 +95,10 @@ export const Navbar = () => {
               ))}
               <button 
                 className="btn btn-primary mx-3"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  handleSignIn();
+                }}
               >
                 Sign In
               </button>
