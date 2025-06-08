@@ -9,7 +9,7 @@ const Footer = () => {
           <div className="md:col-span-2">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">WebAble</h3>
             <p className="text-gray-600 mb-4 max-w-md">
-              Comprehensive web accessibility scanning tool to help you create more inclusive websites that meet WCAG standards.
+              Web accessibility scanning tool to help you create more inclusive websites that meet WCAG standards.
             </p>
           </div>
           
