@@ -76,7 +76,7 @@ const RecentScansSection = () => {
       ) : recentScans.length > 0 ? (
         <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
           <ul className="divide-y divide-gray-200">
-            {recentScans.map((scan) => (
+            {recentScans.slice(0, 3).map((scan) => (
               <li key={scan._id}>
                 <button
                   className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 text-left"
