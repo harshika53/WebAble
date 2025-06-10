@@ -73,7 +73,7 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning }: ScanUrlFormPr
         <input
           type="text"
           className="input pl-10 w-full"
-          placeholder="Enter website URL (e.g., example.com)"
+          placeholder="Enter any website URL"
           value={url}
           onChange={(e) => {
             setUrl(e.target.value);
