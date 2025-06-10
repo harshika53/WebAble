@@ -6,7 +6,6 @@ import {
   ExternalLink, 
   Clock, 
   ChevronRight, 
-  Filter, 
   ArrowUpDown,
   Trash2,
   RefreshCw,
@@ -289,11 +288,6 @@ const HistoryPage = () => {
                   Delete ({selectedScans.length})
                 </button>
               )}
-              
-              <button className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-50 border border-gray-200 rounded-md hover:bg-gray-100 transition-colors">
-                <Filter className="h-4 w-4 mr-2" />
-                Filter
-              </button>
             </div>
           </div>
         </div>
