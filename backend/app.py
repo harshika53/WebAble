@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import pymongo
 import uuid
@@ -27,7 +26,6 @@ mongo_client = pymongo.MongoClient(
 )
 db = mongo_client["accessibility_analyzer"]
 scans_collection = db["scans"]
-users_collection = db["users"]
 
 # URL validation function
 def validate_url(url):
@@ -64,59 +62,6 @@ def not_found(error):
 def handle_exception(e):
     print(f"Unhandled exception: {str(e)}")
     return jsonify({"error": "Internal server error occurred"}), 500
-
-# ------------------ User Signup ------------------
-@app.route('/api/signup', methods=['POST'])
-def signup():
-    try:
-        data = request.get_json()
-        email = data.get("email")
-        password = data.get("password")
-
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-
-        # Email validation
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        if not re.match(email_pattern, email):
-            return jsonify({"error": "Invalid email format"}), 400
-
-        if users_collection.find_one({"email": email}):
-            return jsonify({"error": "User already exists"}), 409
-
-        hashed_pw = generate_password_hash(password)
-        users_collection.insert_one({
-            "email": email,
-            "password": hashed_pw,
-            "created_at": datetime.now()
-        })
-
-        return jsonify({"message": "User registered successfully"}), 201
-
-    except Exception as e:
-        print(f"Signup error: {str(e)}")
-        return jsonify({"error": "Registration failed"}), 500
-
-# ------------------ User Signin ------------------
-@app.route('/api/signin', methods=['POST'])
-def signin():
-    try:
-        data = request.get_json()
-        email = data.get("email")
-        password = data.get("password")
-
-        if not email or not password:
-            return jsonify({"error": "Email and password are required"}), 400
-
-        user = users_collection.find_one({"email": email})
-        if not user or not check_password_hash(user['password'], password):
-            return jsonify({"error": "Invalid credentials"}), 401
-
-        return jsonify({"message": "Login successful", "email": email}), 200
-
-    except Exception as e:
-        print(f"Signin error: {str(e)}")
-        return jsonify({"error": "Login failed"}), 500
 
 # ------------------ Accessibility Scan ------------------
 @app.route('/api/scan', methods=['POST'])
@@ -286,6 +231,29 @@ def recent_scans():
     except Exception as e:
         print(f"Recent scans error: {str(e)}")
         return jsonify({"error": "Failed to retrieve recent scans"}), 500
+    
+
+    # ------------------ Delete Scans ------------------
+@app.route('/api/scans/delete', methods=['DELETE'])
+def delete_scans():
+    try:
+        data = request.get_json()
+        scan_ids = data.get('ids', [])
+        
+        if not scan_ids:
+            return jsonify({"error": "No scan IDs provided"}), 400
+        
+        # Delete scans by their custom ID field
+        result = scans_collection.delete_many({"id": {"$in": scan_ids}})
+        
+        return jsonify({
+            "message": f"Successfully deleted {result.deleted_count} scans",
+            "deleted_count": result.deleted_count
+        }), 200
+        
+    except Exception as e:
+        print(f"Delete scans error: {str(e)}")
+        return jsonify({"error": "Failed to delete scans"}), 500
 
 # ------------------ Health Check Endpoint ------------------
 @app.route('/api/health', methods=['GET'])
@@ -418,8 +386,9 @@ def run_accessibility_scan(url):
         # Extract lighthouse score safely
         lighthouse_score = 0
         try:
-            lighthouse_score = scan_results['lighthouse']['categories']['accessibility']['score'] * 100
-        except (KeyError, TypeError) as e:
+            raw_score = scan_results['lighthouse']['categories']['accessibility'].get('score', 0)
+            lighthouse_score = (raw_score if raw_score is not None else 0) * 100
+        except (KeyError, TypeError, AttributeError) as e:
             print(f"Lighthouse score extraction error: {str(e)}")
             lighthouse_score = 0
 
@@ -427,10 +396,10 @@ def run_accessibility_scan(url):
         processed_results = {
             'score': round(lighthouse_score),
             'metrics': {
-                'performance': round(scan_results.get('lighthouse', {}).get('categories', {}).get('performance', {}).get('score', 0) * 100),
+                'performance': round((scan_results.get('lighthouse', {}).get('categories', {}).get('performance', {}).get('score') or 0) * 100),
                 'accessibility': round(lighthouse_score),
-                'bestPractices': round(scan_results.get('lighthouse', {}).get('categories', {}).get('best-practices', {}).get('score', 0) * 100),
-                'seo': round(scan_results.get('lighthouse', {}).get('categories', {}).get('seo', {}).get('score', 0) * 100)
+                'bestPractices': round((scan_results.get('lighthouse', {}).get('categories', {}).get('best-practices', {}).get('score') or 0) * 100),
+                'seo': round((scan_results.get('lighthouse', {}).get('categories', {}).get('seo', {}).get('score') or 0) * 100)
             },
             'issues': process_axe_results(scan_results.get('axe', {})),
             'issuesBySeverity': count_issues_by_severity(scan_results.get('axe', {})),
