@@ -35,6 +35,7 @@ const HistoryPage = () => {
   const [sortBy, setSortBy] = useState<'date' | 'accessibility_score' | 'url'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedScans, setSelectedScans] = useState<string[]>([]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   
   // Fetch scan history from backend
   const fetchScanHistory = async () => {
@@ -164,6 +165,8 @@ const HistoryPage = () => {
       // Remove from local state
       setScanHistory(prev => prev.filter(scan => !selectedScans.includes(scan.id)));
       setSelectedScans([]);
+      setSuccessMessage('Selected scans deleted successfully!');
+      setTimeout(() => setSuccessMessage(null), 3000);
     } else {
       // If backend deletion fails, still remove from local state
       setScanHistory(prev => prev.filter(scan => !selectedScans.includes(scan.id)));
@@ -235,6 +238,12 @@ const HistoryPage = () => {
 
   return (
     <div className="space-y-6">
+      {/* Success popup */}
+      {successMessage && (
+        <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-100 border border-green-300 text-green-800 px-6 py-3 rounded-lg shadow-lg flex items-center">
+          <span className="font-medium">{successMessage}</span>
+        </div>
+      )}
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">Scan History</h1>
         <div className="flex gap-2">
