@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle2, AlertTriangle } from 'lucide-react';
+import { CheckCircle2} from 'lucide-react';
 import ScanUrlForm from '../components/ScanUrlForm';
 import { useScanner } from '../hooks/useScanner';
 
@@ -98,24 +98,26 @@ const ScanPage = () => {
         </motion.div>
       )}
 
-      <div className="card bg-amber-50 border-amber-100">
+      {/* Accessibility Score Explained Section */}
+      <div className="card bg-slate-200 border-blue-100">
         <div className="flex">
-          <div className="flex-shrink-0">
-            <AlertTriangle className="h-5 w-5 text-amber-600" />
+          <div className="ml-3 flex items-center">
+            <h3 className="text-lg font-semibold text-blue-950 flex items-center">
+              Understanding Accessibility Score
+              <span className="ml-2">
+                <svg className="inline h-5 w-5 text-blue-700" fill="none" viewBox="0 0 20 20">
+                  <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14.5A6.5 6.5 0 1110 3.5a6.5 6.5 0 010 13zm.75-10.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm-1.5 2.5a.75.75 0 011.5 0v5a.75.75 0 01-1.5 0v-5z" fill="currentColor"/>
+                </svg>
+              </span>
+            </h3>
           </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-amber-800">Important Note</h3>
-            <div className="mt-2 text-sm text-amber-700">
-              <p>
-                Automated accessibility testing can identify many issues, but it cannot catch everything. For a complete evaluation, we recommend:
-              </p>
-              <ul className="list-disc list-inside mt-2 space-y-1">
-                <li>Manual testing with screen readers</li>
-                <li>Keyboard navigation testing</li>
-                <li>Testing with real users who have disabilities</li>
-              </ul>
-            </div>
-          </div>
+        </div>
+        <div className="ml-3 mt-2 text-sm">
+          <ul className="list-disc list-inside space-y-1">
+            <li className="font-semibold text-green-700">90–100: Great! Your website is mostly accessible </li>
+            <li className="font-semibold text-blue-600">70–89: Good, but a few issues to fix.</li>
+            <li className="font-semibold text-yellow-600">Below 70: Needs improvement — see the issues listed.</li>
+          </ul>
         </div>
       </div>
     </div>
