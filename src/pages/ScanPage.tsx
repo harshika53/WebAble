@@ -1,14 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { CheckCircle2, ChevronDown, AlertTriangle } from 'lucide-react';
+import { CheckCircle2, AlertTriangle } from 'lucide-react';
 import ScanUrlForm from '../components/ScanUrlForm';
 import { useScanner } from '../hooks/useScanner';
-import { useState } from 'react';
 
 const ScanPage = () => {
   const navigate = useNavigate();
-  const { scan, isScanning } = useScanner(); // 'error' removed
-  const [expandedOptions, setExpandedOptions] = useState(false);
+  const { scan, isScanning } = useScanner();
 
   const steps = [
     "Initializing scan",
@@ -28,10 +26,6 @@ const ScanPage = () => {
     }
   };
 
-  const toggleOptions = () => {
-    setExpandedOptions(!expandedOptions);
-  };
-
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="text-center mb-6">
@@ -42,116 +36,8 @@ const ScanPage = () => {
       </div>
 
       <div className="card">
-        <h2 className="text-xl font-semibold mb-4">Website URL</h2>
+        <h2 className="text-xl font-semibold mb-4">Scan Website URL</h2>
         <ScanUrlForm onSubmit={handleSubmit} isScanning={isScanning} />
-
-        <div className="mt-6">
-          <button
-            onClick={toggleOptions}
-            className="flex items-center text-sm text-gray-600 hover:text-gray-900"
-          >
-            <ChevronDown className={`h-4 w-4 mr-1 transition-transform ${expandedOptions ? 'rotate-180' : ''}`} />
-            Advanced options
-          </button>
-
-          {expandedOptions && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              transition={{ duration: 0.3 }}
-              className="mt-4 pt-4 border-t border-gray-200"
-            >
-              <h3 className="text-sm font-medium text-gray-900 mb-3">Scan Configuration</h3>
-
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="mobile"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                    defaultChecked={true}
-                  />
-                  <label htmlFor="mobile" className="ml-2 text-sm text-gray-600">
-                    Mobile viewport
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="desktop"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                    defaultChecked={true}
-                  />
-                  <label htmlFor="desktop" className="ml-2 text-sm text-gray-600">
-                    Desktop viewport
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="crawl"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                  />
-                  <label htmlFor="crawl" className="ml-2 text-sm text-gray-600">
-                    Crawl additional pages (up to 5)
-                  </label>
-                </div>
-              </div>
-
-              <h3 className="text-sm font-medium text-gray-900 mt-6 mb-3">Test Standards</h3>
-
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="wcag2a"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                    defaultChecked={true}
-                  />
-                  <label htmlFor="wcag2a" className="ml-2 text-sm text-gray-600">
-                    WCAG 2.1 A
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="wcag2aa"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                    defaultChecked={true}
-                  />
-                  <label htmlFor="wcag2aa" className="ml-2 text-sm text-gray-600">
-                    WCAG 2.1 AA
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="wcag2aaa"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                  />
-                  <label htmlFor="wcag2aaa" className="ml-2 text-sm text-gray-600">
-                    WCAG 2.1 AAA
-                  </label>
-                </div>
-
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="section508"
-                    className="h-4 w-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
-                  />
-                  <label htmlFor="section508" className="ml-2 text-sm text-gray-600">
-                    Section 508
-                  </label>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
       </div>
 
       {isScanning && (
