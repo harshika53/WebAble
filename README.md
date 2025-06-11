@@ -9,11 +9,12 @@ A comprehensive web accessibility scanning tool to help create more inclusive we
 - Actionable recommendations for fixing issues
 - Visual dashboard with metrics and scores
 
-## Project Structure
+## 🏗️ Tech Stack
 
-The application consists of:
-
-- React frontend with Tailwind CSS for styling
-- Flask backend for API processing
-- MongoDB for data storage
-- Integration with Lighthouse and axe-core APIs
+| Category      | Technology                                   |
+|---------------|----------------------------------------------|
+| Frontend      | React, Typescript, Tailwind CSS              |
+| Backend       | Flask for API processing                     |
+| Database      | MongoDB                                      |
+| APIs          | Lighthouse and axe-core                      |
+| Authentication | Firebase                                    |
