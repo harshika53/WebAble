@@ -247,6 +247,53 @@ const ReportPage: React.FC = () => {
 
   const currentScore = getScore();
 
+  // Add this helper above the component
+  const getRecommendationsForIssues = (issues: ScanIssue[]) => {
+    const recs: { key: string; label: string; detail?: string }[] = [];
+    const seen = new Set<string>();
+
+    issues.forEach(issue => {
+      if (!issue.title) return;
+      // Example mappings, expand as needed
+      if (/contrast/i.test(issue.title) && !seen.has('contrast')) {
+        recs.push({
+          key: 'contrast',
+          label: 'Increase text contrast',
+          detail: 'Change text and background colors to meet at least a 4.5:1 contrast ratio.'
+        });
+        seen.add('contrast');
+      }
+      if (/alt\s?text|alternative text/i.test(issue.title) && !seen.has('alt')) {
+        recs.push({
+          key: 'alt',
+          label: 'Add alt text to images',
+          detail: 'Provide descriptive alternative text for all images.'
+        });
+        seen.add('alt');
+      }
+      if (/label/i.test(issue.title) && !seen.has('label')) {
+        recs.push({
+          key: 'label',
+          label: 'Add labels to form fields',
+          detail: 'Ensure every form input has an associated <label> element.'
+        });
+        seen.add('label');
+      }
+      // Add more mappings as needed
+    });
+
+    // If no specific recommendations, show a generic one
+    if (recs.length === 0) {
+      recs.push({
+        key: 'generic',
+        label: 'Review accessibility best practices',
+        detail: 'Follow WCAG guidelines to improve your site’s accessibility.'
+      });
+    }
+
+    return recs;
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Header */}
@@ -430,6 +477,34 @@ const ReportPage: React.FC = () => {
                   No accessibility issues found!
                 </div>
               )}
+
+              {/* Recommendations Section */}
+              <div className="mt-8">
+                <h2 className="text-lg font-semibold text-gray-900 mb-3">Recommendations</h2>
+                <ul className="space-y-3">
+                  {reportData.results.issues && reportData.results.issues.length > 0
+                    ? getRecommendationsForIssues(reportData.results.issues).map(rec => (
+                        <li key={rec.key} className="flex items-start">
+                          <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 text-green-700 mr-2 mt-0.5">
+                            {/* Checkmark icon */}
+                            <svg width="16" height="16" fill="none" viewBox="0 0 16 16">
+                              <path d="M4 8.5l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                          </span>
+                          <div>
+                            <span className="font-medium">{rec.label}</span>
+                            {rec.detail && (
+                              <div className="text-gray-600 text-sm">{rec.detail}</div>
+                            )}
+                          </div>
+                        </li>
+                      ))
+                    : (
+                        <li className="text-gray-700">No recommendations needed. Great job!</li>
+                      )
+                  }
+                </ul>
+              </div>
             </div>
           )}
 
