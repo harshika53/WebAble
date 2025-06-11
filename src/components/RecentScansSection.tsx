@@ -34,6 +34,8 @@ const RecentScansSection = () => {
             return res.json();
           });
         
+
+        
         setRecentScans(data);
       } catch (err) {
         console.error("Error fetching recent scans:", err);
@@ -54,6 +56,21 @@ const RecentScansSection = () => {
 
   const handleNewScan = () => {
     navigate('/scan');
+  };
+
+  // Helper to safely format scan date
+  const getRelativeTime = (dateStr: string) => {
+    try {
+      if (!dateStr) return "Unknown";
+      
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return "Unknown";
+      
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch (error) {
+      console.error("Error parsing date:", dateStr, error);
+      return "Unknown";
+    }
   };
 
   return (
@@ -92,7 +109,9 @@ const RecentScansSection = () => {
                       </span>
                       <div className="flex items-center text-xs text-gray-500 mt-1">
                         <Clock className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
-                        <span>{formatDistanceToNow(new Date(scan.date), { addSuffix: true })}</span>
+                        <span>
+                          {getRelativeTime(scan.date)}
+                        </span>
                       </div>
                     </div>
                   </div>
