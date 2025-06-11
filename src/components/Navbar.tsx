@@ -1,11 +1,21 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, CheckCircle2 } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
+import type { User } from 'firebase/auth';
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      setUser(firebaseUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -23,10 +33,17 @@ export const Navbar = () => {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      // Optionally, handle post-sign-in logic here
     } catch (error) {
-      // Optionally, handle errors here
       console.error('Sign in error:', error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Sign out error:', error);
     }
   };
 
@@ -58,7 +75,17 @@ export const Navbar = () => {
                 {item.label}
               </NavLink>
             ))}
-            <button className="btn btn-primary" onClick={handleSignIn}>Sign In</button>
+            {user ? (
+              <div className="flex items-center space-x-2">
+                <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700 text-sm">
+                  <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 16 16"><path d="M2 13.5V12a4 4 0 014-4h4a4 4 0 014 4v1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.5"/></svg>
+                  {user.email}
+                </span>
+                <button className="btn btn-secondary" onClick={handleSignOut}>Sign Out</button>
+              </div>
+            ) : (
+              <button className="btn btn-primary" onClick={handleSignIn}>Sign In</button>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -93,15 +120,25 @@ export const Navbar = () => {
                   {item.label}
                 </NavLink>
               ))}
-              <button 
-                className="btn btn-primary mx-3"
-                onClick={() => {
-                  setIsMenuOpen(false);
-                  handleSignIn();
-                }}
-              >
-                Sign In
-              </button>
+              {user ? (
+                <div className="flex items-center space-x-2 mx-3">
+                  <span className="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700 text-sm">
+                    <svg className="h-4 w-4 mr-1" fill="none" viewBox="0 0 16 16"><path d="M2 13.5V12a4 4 0 014-4h4a4 4 0 014 4v1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/><circle cx="8" cy="5" r="2.5" stroke="currentColor" strokeWidth="1.5"/></svg>
+                    {user.email}
+                  </span>
+                  <button className="btn btn-secondary" onClick={() => { setIsMenuOpen(false); handleSignOut(); }}>Sign Out</button>
+                </div>
+              ) : (
+                <button 
+                  className="btn btn-primary mx-3"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    handleSignIn();
+                  }}
+                >
+                  Sign In
+                </button>
+              )}
             </nav>
           </div>
         )}
