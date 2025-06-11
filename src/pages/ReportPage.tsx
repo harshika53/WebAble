@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineFileDone, AiOutlineWarning, AiOutlineCloseCircle, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { useScanner } from '../hooks/useScanner';
 
@@ -69,6 +69,7 @@ type ScanDataUnion = ReportData | ScanResult;
 
 const ReportPage: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { scanId, id } = useParams<{ scanId?: string; id?: string }>();
   const queryParams = new URLSearchParams(location.search);
   const urlFromQuery = queryParams.get('url') || '';
@@ -431,6 +432,14 @@ const ReportPage: React.FC = () => {
               )}
             </div>
           )}
+
+        {/* Back to Dashboard button */}
+          <button
+            className="inline-flex items-center px-4 py-2 mt-4 bg-blue-200 text-blue-800 text-sm font-medium rounded-md hover:bg-blue-300 transition-colors duration-200"
+            onClick={() => navigate('/')}
+          >
+            Back to Dashboard
+          </button>
 
           {/* Scan Metadata */}
           {reportData.date && (
