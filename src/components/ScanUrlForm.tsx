@@ -7,9 +7,10 @@ import { useScanner } from '../hooks/useScanner';
 interface ScanUrlFormProps {
   onSubmit?: (url: string) => void;
   isScanning?: boolean;
+  disabled?: boolean; // Add disabled prop
 }
 
-const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning }: ScanUrlFormProps) => {
+const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: ScanUrlFormProps) => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -80,13 +81,13 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning }: ScanUrlFormPr
             // Clear errors when user starts typing
             if (error) setError('');
           }}
-          disabled={isCurrentlyScanning}
+          disabled={disabled || isCurrentlyScanning} // Disable input if disabled prop is true
           aria-label="Website URL"
         />
         <button
           type="submit"
           className="btn btn-primary absolute right-1 top-1 bottom-1"
-          disabled={isCurrentlyScanning || !url.trim()}
+          disabled={disabled || isCurrentlyScanning || !url.trim()} // Disable button if disabled prop is true
         >
           {isCurrentlyScanning ? (
             <>
