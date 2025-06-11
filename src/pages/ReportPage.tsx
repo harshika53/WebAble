@@ -500,7 +500,7 @@ const ReportPage: React.FC = () => {
                         </li>
                       ))
                     : (
-                        <li className="text-gray-700">No recommendations needed. Great job!</li>
+                        <li className="text-success-600">No recommendations needed. Great job!</li>
                       )
                   }
                 </ul>
