@@ -1,6 +1,6 @@
 # 💻 WebAble 
 
-A comprehensive web accessibility scanning tool to help create more inclusive websites that meet WCAG standards.
+ A tool designed to evaluate the accessibility of websites and web applications. It helps developers identify and fix common accessibility issues to ensure their content is usable by everyone, including people with disabilities.
 
 ## Features
 
