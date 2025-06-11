@@ -1,23 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { CheckCircle2} from 'lucide-react';
 import ScanUrlForm from '../components/ScanUrlForm';
 import { useScanner } from '../hooks/useScanner';
 
 const ScanPage = () => {
   const navigate = useNavigate();
   const { scan, isScanning } = useScanner();
-
-  const steps = [
-    "Initializing scan",
-    "Analyzing HTML structure",
-    "Checking ARIA attributes",
-    "Evaluating color contrast",
-    "Testing keyboard navigation",
-    "Verifying forms and inputs",
-    "Checking media elements",
-    "Generating report"
-  ];
 
   const handleSubmit = async (url: string) => {
     const result = await scan(url);
@@ -38,66 +25,14 @@ const ScanPage = () => {
       <div className="card">
         <h2 className="text-xl font-semibold mb-4">Scan Website URL</h2>
         <ScanUrlForm onSubmit={handleSubmit} isScanning={isScanning} />
+        {isScanning && (
+          <>
+          <div className="mt-4 text-blue-700 font-medium">
+            Scanning started, this may take a few minutes... 
+          </div>
+          </>
+        )}
       </div>
-
-      {isScanning && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="card"
-        >
-          <h2 className="text-xl font-semibold mb-4">Scan in Progress</h2>
-
-          <div className="mb-6">
-            <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-primary-600 rounded-full"
-                initial={{ width: 0 }}
-                animate={{ width: `12.5%` }} // Adjusted static progress
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-            <div className="flex justify-between mt-1">
-              <span className="text-xs text-gray-500">
-                Step 1 of {steps.length}
-              </span>
-              <span className="text-xs text-gray-500">
-                12% complete
-              </span>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            {steps.map((step, index) => (
-              <div
-                key={index}
-                className={`flex items-center p-2 rounded-md ${
-                  index === 0
-                    ? "bg-primary-50 text-primary-700"
-                    : index < 0
-                      ? "text-gray-600"
-                      : "text-gray-400"
-                }`}
-              >
-                {index < 0 ? (
-                  <CheckCircle2 className="h-5 w-5 text-success-500 mr-2" />
-                ) : index === 0 ? (
-                  <motion.div
-                    className="h-5 w-5 rounded-full border-2 border-primary-500 border-t-transparent mr-2"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  />
-                ) : (
-                  <div className="h-5 w-5 rounded-full border-2 border-gray-300 mr-2" />
-                )}
-                <span className={index <= 0 ? "font-medium" : ""}>{step}</span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-      )}
-
       {/* Accessibility Score Explained Section */}
       <div className="card bg-slate-200 border-blue-100">
         <div className="flex">
