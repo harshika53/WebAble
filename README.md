@@ -14,6 +14,8 @@
 - **Data Management** – Delete scan data when needed.
 - **User Authentication** – Secure login and registration system.
 
+---
+
 ## 🛠️ Tech Stack
 
 | Category      | Technology                                   |
