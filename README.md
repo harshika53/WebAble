@@ -4,17 +4,17 @@
 
 ![Accessibility Analyzer Dashboard](public/Dashboard.png)
 
+----
 
+## ✨ Core Functionality
 
+- **Automated Accessibility Scanning** – Analyze any website using Lighthouse and axe-core.
+- **Comprehensive Reports** – Detailed insights with WCAG compliance and issue breakdowns.
+- **Historical Analysis** – Track previous scans and accessibility improvements.
+- **Data Management** – Delete scan data when needed.
+- **User Authentication** – Secure login and registration system.
 
-## Features
-
-- Website accessibility scanning using Lighthouse and axe-core
-- Detailed reports with WCAG compliance information
-- Actionable recommendations for fixing issues
-- Visual dashboard with metrics and scores
-
-## 🏗️ Tech Stack
+## 🛠️ Tech Stack
 
 | Category      | Technology                                   |
 |---------------|----------------------------------------------|
