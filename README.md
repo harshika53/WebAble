@@ -2,6 +2,11 @@
 
  A tool designed to evaluate the accessibility of websites and web applications. It helps developers identify and fix common accessibility issues to ensure their content is usable by everyone, including people with disabilities.
 
+![Accessibility Analyzer Dashboard](C:\Users\harsh\Pictures\Screenshots)
+
+
+
+
 ## Features
 
 - Website accessibility scanning using Lighthouse and axe-core
