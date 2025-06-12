@@ -23,3 +23,15 @@
 | Database      | MongoDB                                      |
 | APIs          | Lighthouse and axe-core                      |
 | Authentication | Firebase                                    |
+
+---
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to open issues or submit pull requests to improve the project.
+
+1. Fork the repo
+2. Create your branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
