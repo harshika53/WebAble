@@ -516,7 +516,7 @@ const ReportPage: React.FC = () => {
                         )}
 
                         {/* Recommendation Link */}
-                        {'recommendation' in issue && issue.recommendation && (
+                     {/*   {'recommendation' in issue && issue.recommendation && (
                           <div>
                             <a 
                               href={issue.recommendation} 
@@ -530,7 +530,7 @@ const ReportPage: React.FC = () => {
                               </svg>
                             </a>
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                   </div>
