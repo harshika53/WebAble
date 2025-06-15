@@ -19,11 +19,18 @@ CORS(app)
 
 # MongoDB setup
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
-mongo_client = pymongo.MongoClient(
-    MONGO_URI,
-    tls=True,
-    tlsCAFile=certifi.where()
-)
+# Configure client based on connection type
+if MONGO_URI.startswith('mongodb+srv://') or 'mongodb.net' in MONGO_URI:
+    # Atlas connection - use TLS
+    mongo_client = pymongo.MongoClient(
+        MONGO_URI,
+        tls=True,
+        tlsCAFile=certifi.where(),
+        serverSelectionTimeoutMS=30000
+    )
+else:
+    # Local connection - no TLS
+    mongo_client = pymongo.MongoClient(MONGO_URI)
 db = mongo_client["accessibility_analyzer"]
 scans_collection = db["scans"]
 
