@@ -36,6 +36,16 @@ const Footer = () => {
                   Accessibility Tips
                 </a>
               </li>
+              <li>
+                <a
+                  href="https://dequeuniversity.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 hover:text-primary-600 text-sm"
+                >
+                  Learn Accessibility Skills
+                </a>
+              </li>
             </ul>
           </div>
 
