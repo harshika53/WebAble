@@ -59,12 +59,16 @@
    python app.py
    ```
 
+---
+
+
 ## API Endpoints
 
 - **POST /api/scan** - Initiate a website accessibility scan and saves result to MongoDB.
 - **GET /api/reports/:id** - Fetches a scan report by either scan ID or URL.
 - **GET /api/reports** - Get a list of all scan reports.
 
+---
 
 ## 🤝 Contributing
 
