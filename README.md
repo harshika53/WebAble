@@ -23,7 +23,7 @@
 | Frontend      | React, Typescript, Tailwind CSS              |
 | Backend       | Flask for API processing                     |
 | Database      | MongoDB                                      |
-| CLI           | Lighthouse and axe-core                      |
+| Modules       | Lighthouse and axe-core                      |
 | Authentication | Firebase                                    |
 
 ---
