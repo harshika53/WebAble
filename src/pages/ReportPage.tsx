@@ -516,7 +516,7 @@ const ReportPage: React.FC = () => {
                         )}
 
                         {/* Recommendation Link */}
-                     {/*   {'recommendation' in issue && issue.recommendation && (
+                        {'recommendation' in issue && issue.recommendation && (
                           <div>
                             <a 
                               href={issue.recommendation} 
@@ -524,13 +524,13 @@ const ReportPage: React.FC = () => {
                               rel="noopener noreferrer"
                               className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
                             >
-                              📖 How to Fix This Issue
-                              <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                               How to Fix this issue Click ME 
+                             {/* <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
+                              </svg>*/}
                             </a>
                           </div>
-                        )} */}
+                        )} 
                       </div>
                     </div>
                   </div>
