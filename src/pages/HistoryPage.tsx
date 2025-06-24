@@ -11,7 +11,6 @@ import {
   RefreshCw,
   AlertCircle
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
 
 // Define Scan type to match your backend response
 type Scan = {
@@ -71,6 +70,7 @@ const HistoryPage = () => {
       }) => ({
         id: scan.id || scan._id,
         url: scan.url,
+        // Parse date as-is (assume backend returns UTC ISO string)
         date: new Date(scan.date),
         accessibility_score: scan.results?.score || scan.results?.metrics?.accessibility || 0,
         performance_score: scan.results?.metrics?.performance,
@@ -374,7 +374,13 @@ const HistoryPage = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center text-sm text-gray-500">
                         <Clock className="h-4 w-4 mr-2" />
-                        <span>{formatDistanceToNow(scan.date, { addSuffix: true })}</span>
+                        <span>
+                          {scan.date.toLocaleString('en-IN', { 
+                            year: 'numeric', 
+                            month: 'short', 
+                            day: 'numeric'
+                          })}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
