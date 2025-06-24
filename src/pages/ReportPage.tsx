@@ -647,7 +647,9 @@ const ReportPage: React.FC = () => {
           {reportData.date && (
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
-                Scan completed on: <span className="font-medium">{new Date(reportData.date).toLocaleString()}</span>
+                Scan completed on: <span className="font-medium">
+                  {new Date(reportData.date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}
+                </span>
               </p>
             </div>
           )}
