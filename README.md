@@ -12,7 +12,6 @@
 - **Comprehensive Reports** – Detailed insights with WCAG compliance and issue breakdowns.
 - **Historical Analysis** – Track previous scans and accessibility improvements.
 - **Data Management** – Delete scan data when needed.
-- **User Authentication** – Secure login and registration system.
 
 ---
 
@@ -24,7 +23,7 @@
 | Backend       | Flask for API processing                     |
 | Database      | MongoDB                                      |
 | Modules       | Lighthouse and axe-core                      |
-| Authentication | Firebase                                    |
+
 
 ---
 
