@@ -268,6 +268,10 @@ const ReportPage: React.FC = () => {
           setError('Error occurred while fetching scan results.');
         }
         setReportData(null);
+
+        // Redirect to NotFoundPage on error
+        navigate('/404', { replace: true });
+        return;
       } finally {
         setLoading(false);
         scanInProgress.current = false;
@@ -279,7 +283,7 @@ const ReportPage: React.FC = () => {
     } else {
       setError('No scan ID or URL provided for report generation.');
     }
-  }, [scanId, id, urlFromQuery, fetchReport]);
+  }, [scanId, id, urlFromQuery, fetchReport, navigate]);
 
   const getScoreBadgeColor = (score: number): string => {
     if (score >= 90) return 'bg-green-100 text-green-800';
