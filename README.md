@@ -174,3 +174,16 @@ Contributors can help with:
 *   Performance optimizations
     
 *   Documentation improvements
+
+---
+
+## 👩‍💻 Maintainer
+
+**Harshika Rathod**
+Project Maintainer and Developer of WebAble.
+
+---
+
+## ⭐ Support the Project
+
+If you find this project useful, consider giving it a star ⭐ on [GitHub](https://github.com) to support the project and help others discover it.
