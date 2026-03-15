@@ -1,29 +1,71 @@
-# 💻 WebAble 
+# 🌐 WebAble – Website Accessibility Analyzer
 
- A tool designed to evaluate the accessibility of websites and web applications. It helps developers identify and fix common accessibility issues to ensure their content is usable by everyone, including people with disabilities.
+WebAble is an **open-source accessibility analysis tool** designed to evaluate the accessibility of websites and web applications. It helps developers identify accessibility issues and improve compliance with **WCAG standards**, ensuring that digital content is usable by everyone — including people with disabilities.
 
-![Accessibility Analyzer Dashboard](public/Dashboard.png)
+The platform automatically scans websites and generates **detailed accessibility reports**, enabling developers to quickly detect and fix issues affecting usability.
 
-----
+# 📌 Problem Statement
 
-## ✨ Core Functionality
+Millions of websites still fail to meet accessibility standards, making them difficult or impossible to use for people with disabilities. Developers often lack tools that provide **clear, actionable accessibility insights during development**.
 
-- **Automated Accessibility Scanning** – Analyze any website using Lighthouse and axe-core.
-- **Comprehensive Reports** – Detailed insights with WCAG compliance and issue breakdowns.
-- **Historical Analysis** – Track previous scans and accessibility improvements.
-- **Data Management** – Delete scan data when needed.
+WebAble addresses this problem by providing:
+
+- Automated accessibility testing
+- Detailed issue reports
+- Historical tracking of accessibility improvements
+- Developer-friendly analysis tools
+
+This helps teams build **inclusive and accessible web applications**.
 
 ---
 
-## 🛠️ Tech Stack
+# 🚀 Project Overview
 
-| Category      | Technology                                   |
-|---------------|----------------------------------------------|
-| Frontend      | React, Typescript, Tailwind CSS              |
-| Backend       | Flask for API processing                     |
-| Database      | MongoDB                                      |
-| Modules       | Lighthouse and axe-core                      |
+WebAble performs automated accessibility testing using **Lighthouse** and **axe-core** to scan a given website and generate structured reports.
 
+The system provides:
+
+- Accessibility issue detection
+- WCAG compliance insights
+- Historical report tracking
+- Dashboard visualization for accessibility improvements
+
+---
+
+# ✨ Features
+
+### 🔍 Automated Accessibility Scanning
+Analyze any website using **Lighthouse** and **axe-core** to detect accessibility violations.
+
+### 📊 Detailed Accessibility Reports
+Generate comprehensive reports including:
+- WCAG compliance
+- Accessibility issue breakdown
+- Severity levels
+- Improvement suggestions
+
+### 🕒 Historical Scan Tracking
+Store and review previous scan results to track accessibility improvements over time.
+
+### 🗂️ Data Management
+Users can manage or delete scan reports when required.
+
+---
+
+# 🛠️ Tech Stack
+
+| Category | Technology |
+|--------|-------------|
+| Frontend | React, TypeScript, Tailwind CSS |
+| Backend | Flask (Python) |
+| Database | MongoDB |
+| Accessibility Tools | Lighthouse, axe-core |
+
+---
+
+# 📸 Application Preview
+
+![Accessibility Analyzer Dashboard](public/Dashboard.png)
 
 ---
 
