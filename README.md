@@ -149,7 +149,7 @@ We welcome contributions from the community!
 
 ### 2. Create a feature branch 
 ```
-git cheackout -b feature-name
+git checkout -b feature-name
 ```
 ### 3. Commit your changes
 ```
