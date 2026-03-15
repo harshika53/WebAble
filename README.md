@@ -112,30 +112,31 @@ Users can manage or delete scan reports when required.
 ---
 
 ## 📂 Project Structure
-
+```
 WebAble
 │
-├── backend/ # Flask backend and scanning services
-│ ├── app.py
-│ ├── server.js
-│ ├── scan_service.js
-│ └── requirements.txt
+├── backend/                    # Flask backend and scanning services
+│   ├── app.py
+│   ├── server.js
+│   ├── scan_service.js
+│   └── requirements.txt
 │
-├── public/ # Static assets
-│ └── Dashboard.png
+├── public/                     # Static assets
+│   └── Dashboard.png
 │
-├── src/ # Frontend source code
-│ ├── components/
-│ ├── hooks/
-│ ├── pages/
-│ ├── services/
-│ ├── utils/
-│ ├── App.tsx
-│ └── main.tsx
+├── src/                        # Frontend source code
+│   ├── components/
+│   ├── hooks/
+│   ├── pages/
+│   ├── services/
+│   ├── utils/
+│   ├── App.tsx
+│   └── main.tsx
 │
 ├── index.html
 ├── package.json
 └── README.md
+```
 
 ---
 
