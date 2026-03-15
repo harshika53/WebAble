@@ -111,7 +111,65 @@ Users can manage or delete scan reports when required.
 
 ---
 
-## 🤝 Contributing
+## 📂 Project Structure
 
-Fork, branch, commit, push, and open a PR — Open to suggestions and contributions!
+WebAble
+│
+├── backend/ # Flask backend and scanning services
+│ ├── app.py
+│ ├── server.js
+│ ├── scan_service.js
+│ └── requirements.txt
+│
+├── public/ # Static assets
+│ └── Dashboard.png
+│
+├── src/ # Frontend source code
+│ ├── components/
+│ ├── hooks/
+│ ├── pages/
+│ ├── services/
+│ ├── utils/
+│ ├── App.tsx
+│ └── main.tsx
+│
+├── index.html
+├── package.json
+└── README.md
 
+---
+
+# 🤝 Contributing 
+We welcome contributions from the community!
+    
+## How to Contribute 
+
+### 1. Fork the repository
+
+### 2. Create a feature branch 
+```
+git cheackout -b feature-name
+```
+### 3. Commit your changes
+```
+git commit -m "Add new feature"
+```
+
+### 4. Push the branch 
+```
+git push origin feature-name 
+```
+
+### 5. Open a Pull Request 🚀 
+    
+Contributors can help with:
+
+*   Bug fixes
+    
+*   UI improvements
+    
+*   Accessibility rule enhancements
+    
+*   Performance optimizations
+    
+*   Documentation improvements
