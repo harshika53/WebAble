@@ -95,6 +95,7 @@ Users can manage or delete scan reports when required.
    pip install -r requirements.txt
    ```
 3. Create a `.env` file
+
 Inside the `backend` folder, create a `.env` file and add:
 ```env
 MONGO_URI=your_mongodb_connection_string
