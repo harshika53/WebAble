@@ -94,8 +94,16 @@ Users can manage or delete scan reports when required.
    ```
    pip install -r requirements.txt
    ```
+3. Create a `.env` file
+Inside the `backend` folder, create a `.env` file and add:
+```env
+MONGO_URI=your_mongodb_connection_string
+```
 
-3. Start the Flask server:
+> ⚠️ Replace with your actual MongoDB Atlas connection string.  
+> Make sure your MongoDB Atlas cluster is set up and your IP is whitelisted.
+
+4. Start the Flask server:
    ```
    python app.py
    ```
