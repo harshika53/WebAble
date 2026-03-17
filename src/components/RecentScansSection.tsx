@@ -17,10 +17,10 @@ const RecentScansSection = () => {
 
   // Get score color based on value
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600 bg-green-100';
-    if (score >= 75) return 'text-blue-600 bg-blue-100';
-    if (score >= 50) return 'text-yellow-600 bg-yellow-100';
-    return 'text-red-600 bg-red-100';
+    if (score >= 90) return 'text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30';
+    if (score >= 75) return 'text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30';
+    if (score >= 50) return 'text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30';
+    return 'text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30';
   };
 
   useEffect(() => {
@@ -75,10 +75,10 @@ const RecentScansSection = () => {
 
   return (
     <div className="mt-12">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Recent Scans</h2>
+      <div className="flex items-center justify-between mb-6 text-gray-900 dark:text-gray-50">
+        <h2 className="text-2xl font-bold">Recent Scans</h2>
         <button 
-          className="text-sm font-medium text-blue-600 hover:text-blue-700 flex items-center transition-colors"
+          className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center transition-colors"
           onClick={() => navigate('/history')}
         >
           View all <ChevronRight className="h-4 w-4 ml-1" />
@@ -91,23 +91,23 @@ const RecentScansSection = () => {
           <p className="text-gray-500 ml-3">Loading recent scans...</p>
         </div>
       ) : recentScans.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-          <ul className="divide-y divide-gray-200">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+          <ul className="divide-y divide-gray-200 dark:divide-gray-800">
             {recentScans.slice(0, 3).map((scan) => (
               <li key={scan._id}>
                 <button
-                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors duration-200 text-left"
+                  className="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors duration-200 text-left"
                   onClick={() => handleScanClick(scan)}
                 >
                   <div className="flex items-center space-x-4 flex-1 min-w-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 flex-shrink-0">
-                      <ExternalLink className="h-5 w-5 text-gray-500" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 flex-shrink-0">
+                      <ExternalLink className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                     </div>
                     <div className="flex flex-col items-start min-w-0 flex-1">
-                      <span className="text-sm font-medium text-gray-900 truncate w-full" title={scan.url}>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate w-full" title={scan.url}>
                         {scan.url}
                       </span>
-                      <div className="flex items-center text-xs text-gray-500 mt-1">
+                      <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <Clock className="h-3.5 w-3.5 mr-1 flex-shrink-0" />
                         <span>
                           {getRelativeTime(scan.date)}
@@ -128,12 +128,12 @@ const RecentScansSection = () => {
           </ul>
         </div>
       ) : (
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
-            <ExternalLink className="h-6 w-6 text-gray-400" />
+        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-800 mb-4">
+            <ExternalLink className="h-6 w-6 text-gray-400 dark:text-gray-500" />
           </div>
-          <p className="text-gray-500 text-lg mb-2">No recent scans found</p>
-          <p className="text-gray-400 text-sm mb-6">Start by analyzing a website to see your scan history here.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No recent scans found</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mb-6">Start by analyzing a website to see your scan history here.</p>
           <button 
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
             onClick={handleNewScan}
