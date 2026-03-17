@@ -114,15 +114,15 @@ const ReportPage: React.FC = () => {
   const getSeverityBadgeStyle = (impact: string): string => {
     switch (impact.toLowerCase()) {
       case 'critical':
-        return 'bg-red-100 text-red-800 border-red-200';
+        return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-900/50';
       case 'serious':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
+        return 'bg-orange-100 text-orange-800 border-orange-200 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-900/50';
       case 'moderate':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-900/50';
       case 'minor':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
+        return 'bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-900/50';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700';
     }
   };
 
@@ -130,15 +130,15 @@ const ReportPage: React.FC = () => {
   const getSeverityIcon = (impact: string) => {
     switch (impact.toLowerCase()) {
       case 'critical':
-        return <AiOutlineCloseCircle className="text-red-600" size={20} />;
+        return <AiOutlineCloseCircle className="text-red-600 dark:text-red-400" size={20} />;
       case 'serious':
-        return <AiOutlineExclamationCircle className="text-orange-600" size={20} />;
+        return <AiOutlineExclamationCircle className="text-orange-600 dark:text-orange-400" size={20} />;
       case 'moderate':
-        return <AiOutlineWarning className="text-yellow-600" size={20} />;
+        return <AiOutlineWarning className="text-yellow-600 dark:text-yellow-400" size={20} />;
       case 'minor':
-        return <AiOutlineFileDone className="text-blue-600" size={20} />;
+        return <AiOutlineFileDone className="text-blue-600 dark:text-blue-400" size={20} />;
       default:
-        return <AiOutlineWarning className="text-gray-600" size={20} />;
+        return <AiOutlineWarning className="text-gray-600 dark:text-gray-400" size={20} />;
     }
   };
 
@@ -286,10 +286,10 @@ const ReportPage: React.FC = () => {
   }, [scanId, id, urlFromQuery, fetchReport, navigate]);
 
   const getScoreBadgeColor = (score: number): string => {
-    if (score >= 90) return 'bg-green-100 text-green-800';
-    if (score >= 75) return 'bg-blue-100 text-blue-800';
-    if (score >= 50) return 'bg-yellow-100 text-yellow-800';
-    return 'bg-red-100 text-red-800';
+    if (score >= 90) return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+    if (score >= 75) return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
+    if (score >= 50) return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+    return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
   };
 
   const isReportData = (data: ScanDataUnion): data is ReportData => {
@@ -353,19 +353,19 @@ const ReportPage: React.FC = () => {
     <div className="container mx-auto p-6 max-w-4xl">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Accessibility Scan Report</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50 mb-2">Accessibility Scan Report</h1>
         {(reportData?.url || urlFromQuery) && (
           <div className="flex items-center space-x-2">
-            <span className="text-gray-600">URL:</span>
-            <span className="text-blue-600 font-medium break-all">
+            <span className="text-gray-600 dark:text-gray-400">URL:</span>
+            <span className="text-blue-600 dark:text-blue-400 font-medium break-all">
               {reportData?.url || urlFromQuery}
             </span>
           </div>
         )}
         {(scanId || id || reportData?.id || reportData?._id) && (
           <div className="flex items-center space-x-2 mt-2">
-            <span className="text-gray-500 text-sm">Scan ID:</span>
-            <span className="text-gray-700 text-sm font-mono">
+            <span className="text-gray-500 dark:text-gray-500 text-sm">Scan ID:</span>
+            <span className="text-gray-700 dark:text-gray-400 text-sm font-mono">
               {scanId || id || reportData?.id || reportData?._id}
             </span>
           </div>
@@ -376,22 +376,22 @@ const ReportPage: React.FC = () => {
       {loading && (
         <div className="flex items-center justify-center p-12">
           <div className="text-center">
-            <AiOutlineLoading3Quarters className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
-            <p className="text-gray-600 text-lg">Analyzing website accessibility...</p>
-            <p className="text-gray-500 text-sm mt-2">This may take a few moments</p>
+            <AiOutlineLoading3Quarters className="animate-spin mx-auto mb-4 text-blue-600 dark:text-blue-400" size={48} />
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Analyzing website accessibility...</p>
+            <p className="text-gray-500 dark:text-gray-500 text-sm mt-2">This may take a few moments</p>
           </div>
         </div>
       )}
 
       {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 rounded-lg p-6">
           <div className="flex items-center">
-            <AiOutlineCloseCircle className="text-red-600 mr-3" size={24} />
+            <AiOutlineCloseCircle className="text-red-600 dark:text-red-400 mr-3" size={24} />
             <div>
-              <h3 className="text-red-800 font-semibold">Scan Failed</h3>
-              <p className="text-red-600 mt-1">{error}</p>
-              <div className="mt-2 text-xs text-red-500">
+              <h3 className="text-red-800 dark:text-red-300 font-semibold">Scan Failed</h3>
+              <p className="text-red-600 dark:text-red-400 mt-1">{error}</p>
+              <div className="mt-2 text-xs text-red-500 dark:text-red-500/80">
                 <p>Scan ID: {scanId || id || 'Not provided'}</p>
                 <p>URL: {urlFromQuery || 'Not provided'}</p>
               </div>
@@ -405,19 +405,19 @@ const ReportPage: React.FC = () => {
         <div className="space-y-8">
           {/* Overall Score */}
           {currentScore !== undefined && currentScore > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">Overall Accessibility Score</h2>
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50">Overall Accessibility Score</h2>
                 <div className={`px-4 py-2 rounded-full text-2xl font-bold ${getScoreBadgeColor(currentScore)}`}>
                   {currentScore}/100
                 </div>
               </div>
               {reportData.status && (
                 <div className="mt-2">
-                  <span className="text-sm text-gray-600">Status: </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Status: </span>
                   <span className={`text-sm font-medium ${
-                    reportData.status === 'completed' ? 'text-green-600' : 
-                    reportData.status === 'failed' ? 'text-red-600' : 'text-yellow-600'
+                    reportData.status === 'completed' ? 'text-green-600 dark:text-green-400' : 
+                    reportData.status === 'failed' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400'
                   }`}>
                     {reportData.status}
                   </span>
@@ -428,43 +428,43 @@ const ReportPage: React.FC = () => {
 
           {/* Issues Summary by Severity */}
           {reportData.results?.issuesBySeverity && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Summary</h2>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Issues Summary</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="flex items-center space-x-3 p-4 bg-red-50 rounded-lg border border-red-200">
-                  <AiOutlineCloseCircle className="text-red-600" size={24} />
+                <div className="flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-200 dark:border-red-900/50">
+                  <AiOutlineCloseCircle className="text-red-600 dark:text-red-400" size={24} />
                   <div>
-                    <p className="text-2xl font-bold text-red-600">
+                    <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                       {reportData.results.issuesBySeverity.critical}
                     </p>
-                    <p className="text-red-700 font-medium text-sm">Critical</p>
+                    <p className="text-red-700 dark:text-red-300 font-medium text-sm">Critical</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-4 bg-orange-50 rounded-lg border border-orange-200">
-                  <AiOutlineExclamationCircle className="text-orange-600" size={24} />
+                <div className="flex items-center space-x-3 p-4 bg-orange-50 dark:bg-orange-950/20 rounded-lg border border-orange-200 dark:border-orange-900/50">
+                  <AiOutlineExclamationCircle className="text-orange-600 dark:text-orange-400" size={24} />
                   <div>
-                    <p className="text-2xl font-bold text-orange-600">
+                    <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
                       {reportData.results.issuesBySeverity.serious}
                     </p>
-                    <p className="text-orange-700 font-medium text-sm">Serious</p>
+                    <p className="text-orange-700 dark:text-orange-300 font-medium text-sm">Serious</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <AiOutlineWarning className="text-yellow-600" size={24} />
+                <div className="flex items-center space-x-3 p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-900/50">
+                  <AiOutlineWarning className="text-yellow-600 dark:text-yellow-400" size={24} />
                   <div>
-                    <p className="text-2xl font-bold text-yellow-600">
+                    <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                       {reportData.results.issuesBySeverity.moderate}
                     </p>
-                    <p className="text-yellow-700 font-medium text-sm">Moderate</p>
+                    <p className="text-yellow-700 dark:text-yellow-300 font-medium text-sm">Moderate</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <AiOutlineFileDone className="text-blue-600" size={24} />
+                <div className="flex items-center space-x-3 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-900/50">
+                  <AiOutlineFileDone className="text-blue-600 dark:text-blue-400" size={24} />
                   <div>
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                       {reportData.results.issuesBySeverity.minor}
                     </p>
-                    <p className="text-blue-700 font-medium text-sm">Minor</p>
+                    <p className="text-blue-700 dark:text-blue-300 font-medium text-sm">Minor</p>
                   </div>
                 </div>
               </div>
@@ -473,29 +473,29 @@ const ReportPage: React.FC = () => {
 
           {/* Detailed Issues */}
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Found</h2>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Issues Found</h2>
               <div className="space-y-6">
                 {reportData.results.issues.map((issue: AccessibilityIssue | ScanIssue, index: number) => (
-                  <div key={issue.id || index} className="border border-gray-200 rounded-lg p-4">
+                  <div key={issue.id || index} className="border border-gray-100 dark:border-gray-800 rounded-lg p-4">
                     <div className="flex items-start space-x-3 mb-3">
                       {getSeverityIcon(issue.impact || 'moderate')}
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold text-gray-900">{issue.title || `Issue ${index + 1}`}</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-gray-100">{issue.title || `Issue ${index + 1}`}</h3>
                           <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadgeStyle(issue.impact || 'moderate')}`}>
                             {(issue.impact || 'moderate').toUpperCase()}
                           </span>
                         </div>
-                        <p className="text-gray-700 mb-3">{issue.description || 'No description available'}</p>
+                        <p className="text-gray-700 dark:text-gray-300 mb-3">{issue.description || 'No description available'}</p>
                         
                         {/* WCAG Criteria */}
                         {'wcagCriteria' in issue && issue.wcagCriteria && issue.wcagCriteria.length > 0 && (
                           <div className="mb-3">
-                            <h4 className="text-sm font-medium text-gray-700 mb-1">WCAG Guidelines:</h4>
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-400 mb-1">WCAG Guidelines:</h4>
                             <div className="flex flex-wrap gap-1">
                               {formatWcagCriteria(issue.wcagCriteria).map((criteria, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md border border-blue-200">
+                                <span key={idx} className="px-2 py-1 bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-400 text-xs rounded-md border border-blue-200 dark:border-blue-900/50">
                                   {criteria}
                                 </span>
                               ))}
@@ -506,11 +506,11 @@ const ReportPage: React.FC = () => {
                         {/* Affected Elements */}
                         {'affectedElements' in issue && issue.affectedElements && issue.affectedElements.length > 0 && (
                           <div className="mb-3">
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">Affected Elements:</h4>
+                            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-400 mb-2">Affected Elements:</h4>
                             <div className="space-y-2">
                               {issue.affectedElements.map((element, idx) => (
-                                <div key={idx} className="bg-gray-50 border border-gray-200 rounded p-2">
-                                  <code className="text-sm text-gray-800 break-all">
+                                <div key={idx} className="bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded p-2">
+                                  <code className="text-sm text-gray-800 dark:text-gray-200 break-all">
                                     {truncateHtml(element)}
                                   </code>
                                 </div>
@@ -526,12 +526,9 @@ const ReportPage: React.FC = () => {
                               href={issue.recommendation} 
                               target="_blank" 
                               rel="noopener noreferrer"
-                              className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                              className="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                             >
-                               How to Fix this issue Click ME 
-                             {/* <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>*/}
+                               How to Fix this issue
                             </a>
                           </div>
                         )} 
@@ -545,20 +542,20 @@ const ReportPage: React.FC = () => {
 
           {/* Recommendations Section */}
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Recommendations</h2>
+            <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Recommendations</h2>
               <div className="space-y-3">
                 {getRecommendationsForIssues(reportData.results.issues).map(rec => (
-                  <div key={rec.key} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div key={rec.key} className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-900/50">
+                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mt-0.5">
+                      <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                     <div>
-                      <h3 className="font-medium text-green-800">{rec.label}</h3>
+                      <h3 className="font-medium text-green-800 dark:text-green-300">{rec.label}</h3>
                       {rec.detail && (
-                        <p className="text-green-700 text-sm mt-1">{rec.detail}</p>
+                        <p className="text-green-700 dark:text-green-400/80 text-sm mt-1">{rec.detail}</p>
                       )}
                     </div>
                   </div>
@@ -571,34 +568,34 @@ const ReportPage: React.FC = () => {
           {reportData && isReportData(reportData) && (
             <>
               {/* Test Results Summary */}
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">Test Results</h2>
+              <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Test Results</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
-                    <AiOutlineFileDone className="text-green-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-100 dark:border-green-900/50">
+                    <AiOutlineFileDone className="text-green-600 dark:text-green-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {typeof reportData.pass === 'number' ? reportData.pass : 0}
                       </p>
-                      <p className="text-green-700 font-medium">Passed</p>
+                      <p className="text-green-700 dark:text-green-300 font-medium">Passed</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 bg-yellow-50 rounded-lg">
-                    <AiOutlineWarning className="text-yellow-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-100 dark:border-yellow-900/50">
+                    <AiOutlineWarning className="text-yellow-600 dark:text-yellow-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-yellow-600">
+                      <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                         {typeof reportData.warning === 'number' ? reportData.warning : 0}
                       </p>
-                      <p className="text-yellow-700 font-medium">Warnings</p>
+                      <p className="text-yellow-700 dark:text-yellow-300 font-medium">Warnings</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 bg-red-50 rounded-lg">
-                    <AiOutlineCloseCircle className="text-red-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-950/20 rounded-lg border border-red-100 dark:border-red-900/50">
+                    <AiOutlineCloseCircle className="text-red-600 dark:text-red-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-red-600">
+                      <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                         {typeof reportData.fail === 'number' ? reportData.fail : 0}
                       </p>
-                      <p className="text-red-700 font-medium">Failed</p>
+                      <p className="text-red-700 dark:text-red-300 font-medium">Failed</p>
                     </div>
                   </div>
                 </div>
@@ -606,28 +603,28 @@ const ReportPage: React.FC = () => {
 
               {/* Summary */}
               {reportData.summary && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-3">Summary</h2>
-                  <p className="text-gray-700 leading-relaxed">{reportData.summary}</p>
+                <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-3">Summary</h2>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{reportData.summary}</p>
                 </div>
               )}
 
               {/* Vulnerabilities */}
               {reportData.vulnerabilities && Object.keys(reportData.vulnerabilities).length > 0 && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">Detailed Findings</h2>
+                <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-50 mb-4">Detailed Findings</h2>
                   <div className="space-y-4">
                     {Object.entries(reportData.vulnerabilities).map(([key, vuln]) => {
                       const typedVuln = vuln as { count: number; message: string };
                       return (
                         <div key={key} className="border-l-4 border-orange-400 pl-4 py-2">
                           <div className="flex items-start space-x-3">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-400">
                               {typedVuln.count} {typedVuln.count === 1 ? 'issue' : 'issues'}
                             </span>
                             <div className="flex-1">
-                              <h3 className="font-medium text-gray-900 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-                              <p className="text-gray-600 mt-1">{typedVuln.message}</p>
+                              <h3 className="font-medium text-gray-900 dark:text-gray-100 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
+                              <p className="text-gray-600 dark:text-gray-400 mt-1">{typedVuln.message}</p>
                             </div>
                           </div>
                         </div>
@@ -641,7 +638,7 @@ const ReportPage: React.FC = () => {
 
           {/* Back to Dashboard button */}
           <button
-            className="inline-flex items-center px-4 py-2 mt-4 bg-blue-200 text-blue-800 text-sm font-medium rounded-md hover:bg-blue-300 transition-colors duration-200"
+            className="inline-flex items-center px-4 py-2 mt-4 bg-blue-200 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 text-sm font-medium rounded-md hover:bg-blue-300 dark:hover:bg-blue-900/50 transition-colors duration-200"
             onClick={() => navigate('/')}
           >
             Back to Dashboard
@@ -649,8 +646,8 @@ const ReportPage: React.FC = () => {
 
           {/* Scan Metadata */}
           {reportData.date && (
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">
+            <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
                 Scan completed on: {new Date(reportData.date).toLocaleDateString()}
               </p>
             </div>
