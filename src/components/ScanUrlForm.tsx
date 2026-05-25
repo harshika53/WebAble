@@ -7,7 +7,7 @@ import { useScanner } from '../hooks/useScanner';
 interface ScanUrlFormProps {
   onSubmit?: (url: string) => void;
   isScanning?: boolean;
-  disabled?: boolean; // Add disabled prop
+  disabled?: boolean;
 }
 
 const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: ScanUrlFormProps) => {
@@ -16,13 +16,11 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
   const navigate = useNavigate();
   const { scan, isScanning: hookIsScanning, error: scanError } = useScanner();
 
-  // Use external isScanning if provided, otherwise use hook's isScanning
   const isCurrentlyScanning = externalIsScanning !== undefined ? externalIsScanning : hookIsScanning;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic URL validation
     if (!url) {
       setError('Please enter a URL');
       return;
@@ -30,7 +28,6 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
     
     let processedUrl = url;
     
-    // Add protocol if missing
     if (!/^https?:\/\//i.test(url)) {
       processedUrl = `https://${url}`;
     }
@@ -39,11 +36,9 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
       new URL(processedUrl);
       setError('');
       
-      // If onSubmit prop is provided, use it (for external control)
       if (onSubmit) {
         onSubmit(processedUrl);
       } else {
-        // Otherwise, handle scan internally
         console.log('Starting scan for URL:', processedUrl);
         const result = await scan(processedUrl);
         
@@ -62,7 +57,6 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
     }
   };
 
-  // Show scan error if it exists
   const displayError = error || scanError;
 
   return (
@@ -78,16 +72,16 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
           value={url}
           onChange={(e) => {
             setUrl(e.target.value);
-            // Clear errors when user starts typing
             if (error) setError('');
           }}
-          disabled={disabled || isCurrentlyScanning} // Disable input if disabled prop is true
+          disabled={disabled || isCurrentlyScanning}
           aria-label="Website URL"
         />
         <button
           type="submit"
-          className="btn btn-primary absolute right-1 top-1 bottom-1"
-          disabled={disabled || isCurrentlyScanning || !url.trim()} // Disable button if disabled prop is true
+          disabled={disabled || isCurrentlyScanning || !url.trim()}
+          aria-live="polite"
+          className="btn btn-primary absolute right-1 top-1 bottom-1 disabled:!cursor-not-allowed disabled:opacity-80"
         >
           {isCurrentlyScanning ? (
             <>
