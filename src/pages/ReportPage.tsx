@@ -3,7 +3,6 @@ import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineFileDone, AiOutlineWarning, AiOutlineCloseCircle, AiOutlineLoading3Quarters, AiOutlineExclamationCircle } from 'react-icons/ai';
 import { useScanner } from '../hooks/useScanner';
 
-// Enhanced interface for accessibility issues
 interface AccessibilityIssue {
   id: string;
   title: string;
@@ -14,7 +13,6 @@ interface AccessibilityIssue {
   wcagCriteria: string[];
 }
 
-// Enhanced interface for issue severity breakdown
 interface IssuesBySeverity {
   critical: number;
   serious: number;
@@ -22,7 +20,6 @@ interface IssuesBySeverity {
   minor: number;
 }
 
-// Define proper types for metrics and issues
 interface ScanMetrics {
   performance?: number;
   accessibility?: number;
@@ -37,7 +34,6 @@ interface ScanIssue {
   description?: string;
   severity?: 'low' | 'medium' | 'high' | 'critical';
   category?: string;
-  // Enhanced properties for accessibility
   impact?: 'minor' | 'moderate' | 'serious' | 'critical';
   affectedElements?: string[];
   recommendation?: string;
@@ -52,7 +48,6 @@ interface ScanResults {
   issuesBySeverity?: IssuesBySeverity;
 }
 
-// Base interface for common properties
 interface BaseScanData {
   _id?: string;
   id?: string;
@@ -62,14 +57,12 @@ interface BaseScanData {
   status?: string;
 }
 
-// Hook result type
 interface ScanResult extends BaseScanData {
   results?: ScanResults;
   metadata?: Record<string, unknown>;
   scanType?: string;
 }
 
-// Full report data type
 interface ReportData extends BaseScanData {
   url: string;
   date: string;
@@ -100,17 +93,22 @@ const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Use the scanner hook
   const { fetchReport } = useScanner();
   const scanInProgress = useRef(false);
   const lastScanId = useRef<string | null>(null);
   const lastScannedUrl = useRef<string | null>(null);
 
   const isLikelyScanId = (value?: string) => {
-    return !!value && (/^[a-f\d]{24}$/i.test(value) || /^[\w\d-]{36}$/.test(value));
+    if (!value) return false;
+    const cleanValue = value.trim();
+    return (
+      /^[a-f\d]{24}$/i.test(cleanValue) || 
+      /^[\w\d-]{36}$/.test(cleanValue) || 
+      /^https?:\/\//i.test(cleanValue) ||
+      cleanValue.includes('.')
+    );
   };
 
-  // Get severity badge styling
   const getSeverityBadgeStyle = (impact: string): string => {
     switch (impact.toLowerCase()) {
       case 'critical':
@@ -126,7 +124,6 @@ const ReportPage: React.FC = () => {
     }
   };
 
-  // Get severity icon
   const getSeverityIcon = (impact: string) => {
     switch (impact.toLowerCase()) {
       case 'critical':
@@ -142,12 +139,10 @@ const ReportPage: React.FC = () => {
     }
   };
 
-  // Format WCAG criteria for display
   const formatWcagCriteria = (criteria: string[]): string[] => {
     return criteria.filter(c => c.startsWith('wcag')).map(c => c.toUpperCase());
   };
 
-  // Truncate HTML for display
   const truncateHtml = (html: string, maxLength: number = 100): string => {
     if (html.length <= maxLength) return html;
     return html.substring(0, maxLength) + '...';
@@ -160,9 +155,22 @@ const ReportPage: React.FC = () => {
       setLoading(true);
       setError(null);
 
-      try {
-        const currentScanId = scanId || id;
+      const rawScanId = scanId || id;
+      const currentScanId = rawScanId ? decodeURIComponent(rawScanId) : undefined;
 
+      // Defensive checking for invalid domains right before calling the APIs
+      const isTargetInvalid = currentScanId && 
+        (!currentScanId.includes('.') || 
+         currentScanId.replace('https://', '').replace('http://', '').length < 4);
+
+      if (isTargetInvalid) {
+        setError('Invalid Scan Target Format. Please return to the dashboard and supply a valid website domain address (e.g., example.com).');
+        setLoading(false);
+        scanInProgress.current = false;
+        return;
+      }
+
+      try {
         if (isLikelyScanId(currentScanId)) {
           if (lastScanId.current === currentScanId) {
             scanInProgress.current = false;
@@ -171,41 +179,40 @@ const ReportPage: React.FC = () => {
           }
           lastScanId.current = currentScanId ?? null;
 
-          if (isLikelyScanId(currentScanId)) {
-            console.log('Fetching report for scan ID:', currentScanId);
+          console.log('Fetching report for scan ID:', currentScanId);
 
-            try {
-              const hookResult = await fetchReport(currentScanId!);
-              if (hookResult) {
-                const normalizedResult = {
-                  ...hookResult,
-                  date: hookResult.date instanceof Date ? hookResult.date.toISOString() : hookResult.date,
-                };
-                setReportData(normalizedResult);
-                setLoading(false);
-                scanInProgress.current = false;
-                return;
-              }
-            } catch (hookError) {
-              console.warn('Hook fetchReport failed:', hookError);
+          try {
+            const hookResult = await fetchReport(currentScanId!);
+            if (hookResult) {
+              const normalizedResult = {
+                ...hookResult,
+                date: hookResult.date instanceof Date ? hookResult.date.toISOString() : hookResult.date,
+              };
+              setReportData(normalizedResult);
+              setLoading(false);
+              scanInProgress.current = false;
+              return;
             }
+          } catch (hookError) {
+            console.warn('Hook fetchReport failed:', hookError);
+          }
 
-            let response: Response | null = null;
-            try {
-              response = await fetch(`http://localhost:5000/api/scan-report/${currentScanId}`);
-              if (!response.ok) {
-                response = await fetch(`http://localhost:5000/api/reports/${currentScanId}`);
-              }
-              if (response.ok) {
-                const data: ReportData = await response.json();
-                setReportData(data);
-                setLoading(false);
-                scanInProgress.current = false;
-                return;
-              }
-            } catch (apiError) {
-              console.warn('API calls failed:', apiError);
+          let response: Response | null = null;
+          try {
+            const encodedParam = encodeURIComponent(currentScanId!);
+            response = await fetch(`http://localhost:5000/api/scan-report/${encodedParam}`);
+            if (!response.ok) {
+              response = await fetch(`http://localhost:5000/api/reports/${encodedParam}`);
             }
+            if (response.ok) {
+              const data: ReportData = await response.json();
+              setReportData(data);
+              setLoading(false);
+              scanInProgress.current = false;
+              return;
+            }
+          } catch (apiError) {
+            console.warn('API calls failed:', apiError);
           }
         }
 
@@ -235,12 +242,14 @@ const ReportPage: React.FC = () => {
             throw new Error('Scan started but no scan ID returned.');
           }
 
-          window.history.replaceState({}, '', `/report/${newScanId}`);
+          const safeNewScanId = encodeURIComponent(newScanId);
+          window.history.replaceState({}, '', `/report/${safeNewScanId}`);
 
           let resultData: ReportData | null = null;
           const pollForResult = async (retries = 20) => {
             for (let i = 0; i < retries; i++) {
-              const resultResponse = await fetch(`http://localhost:5000/api/scan-report/${newScanId}`);
+              const encodedReportParam = encodeURIComponent(newScanId);
+              const resultResponse = await fetch(`http://localhost:5000/api/scan-report/${encodedReportParam}`);
               if (resultResponse.ok) {
                 resultData = await resultResponse.json();
                 if (resultData && resultData.status === 'completed') {
@@ -261,20 +270,29 @@ const ReportPage: React.FC = () => {
 
         throw new Error('No valid scan ID or URL provided for report generation.');
       } catch (err: unknown) {
-        console.error('Scan error:', err);
+        console.error('Scan error caught:', err);
+        setReportData(null);
+
+        if (currentScanId && (currentScanId.startsWith('http') || currentScanId.includes('.'))) {
+          setError('WebAble Backend Offline. Frontend routing parsed successfully. Turn on the backend server (port 5000) to pull real database accessibility metrics.');
+          setLoading(false);
+          scanInProgress.current = false;
+          return;
+        }
+
         if (err instanceof Error) {
           setError(err.message || 'Error occurred while fetching scan results.');
         } else {
           setError('Error occurred while fetching scan results.');
         }
-        setReportData(null);
-
-        // Redirect to NotFoundPage on error
+        setLoading(false);
         navigate('/404', { replace: true });
         return;
       } finally {
-        setLoading(false);
-        scanInProgress.current = false;
+        if (!error && (!currentScanId || (!currentScanId.startsWith('http') && !currentScanId.includes('.')))) {
+          setLoading(false);
+          scanInProgress.current = false;
+        }
       }
     };
 
@@ -283,7 +301,7 @@ const ReportPage: React.FC = () => {
     } else {
       setError('No scan ID or URL provided for report generation.');
     }
-  }, [scanId, id, urlFromQuery, fetchReport, navigate]);
+  }, [scanId, id, urlFromQuery, fetchReport, navigate, error]);
 
   const getScoreBadgeColor = (score: number): string => {
     if (score >= 90) return 'bg-green-100 text-green-800';
@@ -351,7 +369,6 @@ const ReportPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 max-w-4xl">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Accessibility Scan Report</h1>
         {(reportData?.url || urlFromQuery) && (
@@ -372,8 +389,7 @@ const ReportPage: React.FC = () => {
         )}
       </div>
 
-      {/* Loading State */}
-      {loading && (
+      {loading && !error && (
         <div className="flex items-center justify-center p-12">
           <div className="text-center">
             <AiOutlineLoading3Quarters className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
@@ -383,27 +399,24 @@ const ReportPage: React.FC = () => {
         </div>
       )}
 
-      {/* Error State */}
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 my-4">
           <div className="flex items-center">
-            <AiOutlineCloseCircle className="text-red-600 mr-3" size={24} />
+            <AiOutlineCloseCircle className="text-red-600 mr-3 flex-shrink-0" size={24} />
             <div>
-              <h3 className="text-red-800 font-semibold">Scan Failed</h3>
-              <p className="text-red-600 mt-1">{error}</p>
-              <div className="mt-2 text-xs text-red-500">
-                <p>Scan ID: {scanId || id || 'Not provided'}</p>
-                <p>URL: {urlFromQuery || 'Not provided'}</p>
+              <h3 className="text-red-800 font-semibold text-lg">Scan Status Notice</h3>
+              <p className="text-red-600 mt-1 font-medium">{error}</p>
+              <div className="mt-4 text-xs text-red-500 border-t border-red-200 pt-2 space-y-1">
+                <p><span className="font-semibold">Scan Parameter:</span> {scanId || id || 'Not provided'}</p>
+                <p><span className="font-semibold">Query Target:</span> {urlFromQuery || 'Not provided'}</p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* Report Data */}
       {reportData && (
         <div className="space-y-8">
-          {/* Overall Score */}
           {currentScore !== undefined && currentScore > 0 && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between">
@@ -426,7 +439,6 @@ const ReportPage: React.FC = () => {
             </div>
           )}
 
-          {/* Issues Summary by Severity */}
           {reportData.results?.issuesBySeverity && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Summary</h2>
@@ -471,7 +483,6 @@ const ReportPage: React.FC = () => {
             </div>
           )}
 
-          {/* Detailed Issues */}
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Found</h2>
@@ -489,7 +500,6 @@ const ReportPage: React.FC = () => {
                         </div>
                         <p className="text-gray-700 mb-3">{issue.description || 'No description available'}</p>
                         
-                        {/* WCAG Criteria */}
                         {'wcagCriteria' in issue && issue.wcagCriteria && issue.wcagCriteria.length > 0 && (
                           <div className="mb-3">
                             <h4 className="text-sm font-medium text-gray-700 mb-1">WCAG Guidelines:</h4>
@@ -503,7 +513,6 @@ const ReportPage: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Affected Elements */}
                         {'affectedElements' in issue && issue.affectedElements && issue.affectedElements.length > 0 && (
                           <div className="mb-3">
                             <h4 className="text-sm font-medium text-gray-700 mb-2">Affected Elements:</h4>
@@ -519,7 +528,6 @@ const ReportPage: React.FC = () => {
                           </div>
                         )}
 
-                        {/* Recommendation Link */}
                         {'recommendation' in issue && issue.recommendation && (
                           <div>
                             <a 
@@ -529,9 +537,6 @@ const ReportPage: React.FC = () => {
                               className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
                             >
                                How to Fix this issue Click ME 
-                             {/* <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>*/}
                             </a>
                           </div>
                         )} 
@@ -543,7 +548,6 @@ const ReportPage: React.FC = () => {
             </div>
           )}
 
-          {/* Recommendations Section */}
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Recommendations</h2>
@@ -567,10 +571,8 @@ const ReportPage: React.FC = () => {
             </div>
           )}
 
-          {/* Legacy Report Data Support */}
           {reportData && isReportData(reportData) && (
             <>
-              {/* Test Results Summary */}
               <div className="bg-white rounded-lg border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Test Results</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -604,7 +606,6 @@ const ReportPage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Summary */}
               {reportData.summary && (
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">Summary</h2>
@@ -612,7 +613,6 @@ const ReportPage: React.FC = () => {
                 </div>
               )}
 
-              {/* Vulnerabilities */}
               {reportData.vulnerabilities && Object.keys(reportData.vulnerabilities).length > 0 && (
                 <div className="bg-white rounded-lg border border-gray-200 p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">Detailed Findings</h2>
@@ -639,7 +639,6 @@ const ReportPage: React.FC = () => {
             </>
           )}
 
-          {/* Back to Dashboard button */}
           <button
             className="inline-flex items-center px-4 py-2 mt-4 bg-blue-200 text-blue-800 text-sm font-medium rounded-md hover:bg-blue-300 transition-colors duration-200"
             onClick={() => navigate('/')}
@@ -647,7 +646,6 @@ const ReportPage: React.FC = () => {
             Back to Dashboard
           </button>
 
-          {/* Scan Metadata */}
           {reportData.date && (
             <div className="bg-gray-50 rounded-lg p-4">
               <p className="text-sm text-gray-600">
