@@ -92,6 +92,7 @@ const ReportPage: React.FC = () => {
   const [reportData, setReportData] = useState<ScanDataUnion | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { fetchReport } = useScanner();
   const scanInProgress = useRef(false);
@@ -147,7 +148,18 @@ const ReportPage: React.FC = () => {
     if (html.length <= maxLength) return html;
     return html.substring(0, maxLength) + '...';
   };
+  const copyReportLink = async () => {
+  try {
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
 
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
+  } catch (error) {
+    console.error("Failed to copy link:", error);
+  }
+};
   useEffect(() => {
     const fetchScanResults = async () => {
       if (scanInProgress.current) return;
@@ -370,7 +382,22 @@ const ReportPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6 max-w-4xl">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Accessibility Scan Report</h1>
+        <div className="flex items-center justify-between mb-2">
+  <h1 className="text-3xl font-bold text-gray-900">
+    Accessibility Scan Report
+  </h1>
+  {copied && (
+  <div className="mb-4 text-green-600 font-medium">
+    Link copied successfully!
+  </div>
+)}
+  <button
+    onClick={copyReportLink}
+    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+  >
+    Copy Report Link
+  </button>
+</div>
         {(reportData?.url || urlFromQuery) && (
           <div className="flex items-center space-x-2">
             <span className="text-gray-600">URL:</span>
