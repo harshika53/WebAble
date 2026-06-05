@@ -61,6 +61,9 @@ def handle_exception(e):
     print(f"Unhandled exception: {str(e)}")
     return jsonify({"error": "Internal server error occurred"}), 500
 
+# ------------------ Accessibility Scan ------------------
+
+# --------------------------------------
 @app.route('/api/scan', methods=['POST'])
 def scan_url():
     try:
@@ -75,21 +78,56 @@ def scan_url():
 
         print(f"Starting scan for URL: {url}")
         scan_results = run_accessibility_scan(url)
+        # Run scan (TEMPORARILY BYPASSED FOR TESTING DUPLICATES)
+        
+        
+        scan_results = {
+            "score": 85,
+            "metrics": {
+                "performance": 90,
+                "accessibility": 85,
+                "bestPractices": 80,
+                "seo": 95
+            },
+            "issues": [],
+            "issuesBySeverity": {"critical": 0, "serious": 0, "moderate": 0, "minor": 0},
+            "scanTime": datetime.now().isoformat()
+        }
 
+        # Check if a scan for this URL already exists in the database
         existing_scan = scans_collection.find_one({"url": url})
+
         if existing_scan:
-            scans_collection.update_one(
-                {"url": url},
-                {"$set": {"date": datetime.now(), "results": scan_results, "status": "completed"}}
-            )
             scan_id = existing_scan["id"]
+            inserted_id = existing_scan["_id"]
+            
+            # Update the existing document with new scan details
+            scans_collection.update_one(
+                {"_id": inserted_id},
+                {
+                    "$set": {
+                        "original_url": raw_url,
+                        "date": datetime.now(),
+                        "results": scan_results,
+                        "status": "completed"
+                    }
+                }
+            )
+            print(f"Existing scan updated for ID: {scan_id}")
         else:
+            # Create a brand new document if it's a new unique URL
             scan_id = str(uuid.uuid4())
             scan_document = {
-                "id": scan_id, "url": url, "original_url": raw_url,
-                "date": datetime.now(), "results": scan_results, "status": "completed"
+                "id": scan_id,
+                "url": url,
+                "original_url": raw_url,
+                "date": datetime.now(),
+                "results": scan_results,
+                "status": "completed"
             }
-            scans_collection.insert_one(scan_document)
+            result = scans_collection.insert_one(scan_document)
+            inserted_id = result.inserted_id
+            print(f"New scan saved with ID: {scan_id}, MongoDB _id: {inserted_id}")
 
         return jsonify({
             "id": scan_id, "scanId": scan_id, "url": url,
