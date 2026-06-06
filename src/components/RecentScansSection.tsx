@@ -91,7 +91,7 @@ const RecentScansSection = () => {
           <p className="text-gray-500 ml-3">Loading recent scans...</p>
         </div>
       ) : recentScans.length > 0 ? (
-        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-gray-200 bg-white dark:bg-gray-800  shadow-sm">
           <ul className="divide-y divide-gray-200">
             {recentScans.slice(0, 3).map((scan) => (
               <li key={scan._id}>
@@ -128,12 +128,12 @@ const RecentScansSection = () => {
           </ul>
         </div>
       ) : (
-        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 mb-4">
-            <ExternalLink className="h-6 w-6 text-gray-400" />
+        <div className="rounded-lg border border-gray-200 bg-white dark:bg-gray-800  p-8 text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-gray-100 dark:bg-gray-600 mb-4">
+            <ExternalLink className="h-6 w-6 text-gray-400 dark:text-gray-300" />
           </div>
-          <p className="text-gray-500 text-lg mb-2">No recent scans found</p>
-          <p className="text-gray-400 text-sm mb-6">Start by analyzing a website to see your scan history here.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No recent scans found</p>
+          <p className="text-gray-400 dark:text-gray-500 text-sm mb-6">Start by analyzing a website to see your scan history here.</p>
           <button 
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors duration-200"
             onClick={handleNewScan}

@@ -9,7 +9,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-4 sm:col-span-2 lg:col-span-2">
             <h3 className="text-lg font-semibold text-gray-900 sm:text-xl lg:text-2xl">WebAble</h3>
-            <p className="max-w-md text-sm leading-relaxed text-gray-600 sm:text-base">
+            <p className="max-w-md text-sm leading-relaxed text-gray-600 dark:text-gray-300 sm:text-base">
               Web accessibility scanning tool to help you create more inclusive websites that meet WCAG standards.
             </p>
           </div>
@@ -22,7 +22,7 @@ const Footer = () => {
                   href="https://www.wcag.com/resource/what-is-wcag/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-md py-1 text-sm text-gray-600 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                  className="block rounded-md py-1 text-sm text-gray-600 dark:text-gray-300 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                   WCAG Guidelines
                 </a>
@@ -32,7 +32,7 @@ const Footer = () => {
                   href="https://websitesetup.org/web-accessibility-checklist/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-md py-1 text-sm text-gray-600 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                  className="block rounded-md py-1 text-sm text-gray-600 dark:text-gray-300 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                   Accessibility Tips
                 </a>
@@ -42,7 +42,7 @@ const Footer = () => {
                   href="https://dequeuniversity.com/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block rounded-md py-1 text-sm text-gray-600 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                  className="block rounded-md py-1 text-sm text-gray-600 dark:text-gray-300 transition-all duration-300 hover:translate-x-1 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 >
                   Learn Accessibility Skills
                 </a>
@@ -55,7 +55,7 @@ const Footer = () => {
             <div className="flex items-center gap-3">
               <a
                 href="mailto:your-email@gmail.com"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition-all duration-300 hover:scale-110 hover:bg-blue-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-gray-800  text-gray-500 shadow-sm transition-all duration-300 hover:scale-110 hover:bg-blue-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 aria-label="Email"
               >
                 <Mail className="h-5 w-5" />
@@ -64,7 +64,7 @@ const Footer = () => {
                 href="https://www.linkedin.com/in/your-profile"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-gray-500 shadow-sm transition-all duration-300 hover:scale-110 hover:bg-blue-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white dark:bg-gray-800  text-gray-500 shadow-sm transition-all duration-300 hover:scale-110 hover:bg-blue-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-5 w-5" />
