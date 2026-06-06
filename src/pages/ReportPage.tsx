@@ -136,7 +136,7 @@ const ReportPage: React.FC = () => {
       case 'minor':
         return <AiOutlineFileDone className="text-blue-600" size={20} />;
       default:
-        return <AiOutlineWarning className="text-gray-600" size={20} />;
+        return <AiOutlineWarning className="text-gray-600 dark:text-gray-300" size={20} />;
     }
   };
 
@@ -400,7 +400,7 @@ const ReportPage: React.FC = () => {
 </div>
         {(reportData?.url || urlFromQuery) && (
           <div className="flex items-center space-x-2">
-            <span className="text-gray-600">URL:</span>
+            <span className="text-gray-600 dark:text-gray-300">URL:</span>
             <span className="text-blue-600 font-medium break-all">
               {reportData?.url || urlFromQuery}
             </span>
@@ -408,8 +408,8 @@ const ReportPage: React.FC = () => {
         )}
         {(scanId || id || reportData?.id || reportData?._id) && (
           <div className="flex items-center space-x-2 mt-2">
-            <span className="text-gray-500 text-sm">Scan ID:</span>
-            <span className="text-gray-700 text-sm font-mono">
+            <span className="text-gray-500 text-sm dark:text-gray-300">Scan ID:</span>
+            <span className="text-gray-700 text-sm font-mono dark:text-gray-300">
               {scanId || id || reportData?.id || reportData?._id}
             </span>
           </div>
@@ -420,7 +420,7 @@ const ReportPage: React.FC = () => {
         <div className="flex items-center justify-center p-12">
           <div className="text-center">
             <AiOutlineLoading3Quarters className="animate-spin mx-auto mb-4 text-blue-600" size={48} />
-            <p className="text-gray-600 text-lg">Analyzing website accessibility...</p>
+            <p className="text-gray-600 dark:text-gray-300 text-lg">Analyzing website accessibility...</p>
             <p className="text-gray-500 text-sm mt-2">This may take a few moments</p>
           </div>
         </div>
@@ -445,7 +445,7 @@ const ReportPage: React.FC = () => {
       {reportData && (
         <div className="space-y-8">
           {currentScore !== undefined && currentScore > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Overall Accessibility Score</h2>
                 <div className={`px-4 py-2 rounded-full text-2xl font-bold ${getScoreBadgeColor(currentScore)}`}>
@@ -454,7 +454,7 @@ const ReportPage: React.FC = () => {
               </div>
               {reportData.status && (
                 <div className="mt-2">
-                  <span className="text-sm text-gray-600">Status: </span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Status: </span>
                   <span className={`text-sm font-medium ${
                     reportData.status === 'completed' ? 'text-green-600' : 
                     reportData.status === 'failed' ? 'text-red-600' : 'text-yellow-600'
@@ -467,7 +467,7 @@ const ReportPage: React.FC = () => {
           )}
 
           {reportData.results?.issuesBySeverity && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Summary</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="flex items-center space-x-3 p-4 bg-red-50 rounded-lg border border-red-200">
@@ -511,11 +511,11 @@ const ReportPage: React.FC = () => {
           )}
 
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Found</h2>
               <div className="space-y-6">
                 {reportData.results.issues.map((issue: AccessibilityIssue | ScanIssue, index: number) => (
-                  <div key={issue.id || index} className="border border-gray-200 rounded-lg p-4">
+                  <div key={issue.id || index} className="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
                     <div className="flex items-start space-x-3 mb-3">
                       {getSeverityIcon(issue.impact || 'moderate')}
                       <div className="flex-1">
@@ -576,13 +576,13 @@ const ReportPage: React.FC = () => {
           )}
 
           {reportData.results?.issues && reportData.results.issues.length > 0 && (
-            <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Recommendations</h2>
               <div className="space-y-3">
                 {getRecommendationsForIssues(reportData.results.issues).map(rec => (
-                  <div key={rec.key} className="flex items-start space-x-3 p-3 bg-green-50 rounded-lg border border-green-200">
-                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mt-0.5">
-                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div key={rec.key} className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-900 rounded-lg border border-green-200 dark:border-green-600">
+                    <div className="flex-shrink-0 w-6 h-6 bg-green-100 dark:bg-green-800 rounded-full flex items-center justify-center mt-0.5">
+                      <svg className="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
@@ -600,48 +600,48 @@ const ReportPage: React.FC = () => {
 
           {reportData && isReportData(reportData) && (
             <>
-              <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Test Results</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="flex items-center space-x-3 p-4 bg-green-50 rounded-lg">
-                    <AiOutlineFileDone className="text-green-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-green-50 dark:bg-green-900 rounded-lg">
+                    <AiOutlineFileDone className="text-green-600 dark:text-green-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-green-600">
+                      <p className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {typeof reportData.pass === 'number' ? reportData.pass : 0}
                       </p>
-                      <p className="text-green-700 font-medium">Passed</p>
+                      <p className="text-green-700 dark:text-green-300 font-medium">Passed</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 bg-yellow-50 rounded-lg">
-                    <AiOutlineWarning className="text-yellow-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                    <AiOutlineWarning className="text-yellow-600 dark:text-yellow-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-yellow-600">
+                      <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                         {typeof reportData.warning === 'number' ? reportData.warning : 0}
                       </p>
-                      <p className="text-yellow-700 font-medium">Warnings</p>
+                      <p className="text-yellow-700 dark:text-yellow-300 font-medium">Warnings</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 bg-red-50 rounded-lg">
-                    <AiOutlineCloseCircle className="text-red-600" size={32} />
+                  <div className="flex items-center space-x-3 p-4 bg-red-50 dark:bg-red-900 rounded-lg">
+                    <AiOutlineCloseCircle className="text-red-600 dark:text-red-400" size={32} />
                     <div>
-                      <p className="text-2xl font-bold text-red-600">
+                      <p className="text-2xl font-bold text-red-600 dark:text-red-400">
                         {typeof reportData.fail === 'number' ? reportData.fail : 0}
                       </p>
-                      <p className="text-red-700 font-medium">Failed</p>
+                      <p className="text-red-700 dark:text-red-300 font-medium">Failed</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               {reportData.summary && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">Summary</h2>
-                  <p className="text-gray-700 leading-relaxed">{reportData.summary}</p>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">{reportData.summary}</p>
                 </div>
               )}
 
               {reportData.vulnerabilities && Object.keys(reportData.vulnerabilities).length > 0 && (
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">Detailed Findings</h2>
                   <div className="space-y-4">
                     {Object.entries(reportData.vulnerabilities).map(([key, vuln]) => {
@@ -654,7 +654,7 @@ const ReportPage: React.FC = () => {
                             </span>
                             <div className="flex-1">
                               <h3 className="font-medium text-gray-900 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</h3>
-                              <p className="text-gray-600 mt-1">{typedVuln.message}</p>
+                              <p className="text-gray-600 dark:text-gray-300 mt-1">{typedVuln.message}</p>
                             </div>
                           </div>
                         </div>
@@ -675,7 +675,7 @@ const ReportPage: React.FC = () => {
 
           {reportData.date && (
             <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
                 Scan completed on: {new Date(reportData.date).toLocaleDateString()}
               </p>
             </div>
