@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 from datetime import datetime
 import pymongo
 import uuid
@@ -16,7 +16,8 @@ from urllib.parse import urlparse, unquote
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+# CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # MongoDB setup
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
@@ -158,6 +159,7 @@ def get_reports():
     except Exception: return jsonify({"error": "Failed to retrieve reports"}), 500
 
 @app.route('/api/recent-scans', methods=['GET'])
+@cross_origin()
 def recent_scans():
     try:
         limit = min(int(request.args.get('limit', 5)), 20)
