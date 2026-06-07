@@ -81,3 +81,10 @@ module.exports = {
   runLighthouseScan,
   runAxeScan
 };
+
+// In your scan result object, include full axe data:
+axeResults: {
+  violations: axeResults.violations,   // array with id, impact, description, help, helpUrl, nodes, tags
+  passes: axeResults.passes,           // array with id, tags
+  incomplete: axeResults.incomplete,
+}

@@ -2,6 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { AiOutlineFileDone, AiOutlineWarning, AiOutlineCloseCircle, AiOutlineLoading3Quarters, AiOutlineExclamationCircle } from 'react-icons/ai';
 import { useScanner } from '../hooks/useScanner';
+import { CategoryScoreCard } from '../components/CategoryScoreCard';
+import { AccessibilityChart } from '../components/AccessibilityChart';
+import { ImprovementSuggestions } from '../components/ImprovementSuggestions';
+import { parseAccessibilityData } from '../utils/parseAccessibilityData';
 
 interface AccessibilityIssue {
   id: string;
@@ -93,6 +97,8 @@ const ReportPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const { categories, suggestions } = parseAccessibilityData(report.axeResults);
+
 
   const { fetchReport } = useScanner();
   const scanInProgress = useRef(false);
@@ -465,7 +471,19 @@ const ReportPage: React.FC = () => {
               )}
             </div>
           )}
-
+         <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
+               {categories.map((cat) => (
+              <CategoryScoreCard key={cat.category} {...cat} />
+               ))}
+        </section>
+            <div className="mt-6">
+               <AccessibilityChart
+                 data={categories.map(c => ({ category: c.category, score: c.score }))}
+        />
+        </div>
+            <div className="mt-6">
+                 <ImprovementSuggestions suggestions={suggestions} />
+        </div>
           {reportData.results?.issuesBySeverity && (
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Issues Summary</h2>
