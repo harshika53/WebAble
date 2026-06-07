@@ -31,7 +31,7 @@ const Dashboard = () => {
           <h1 className="mb-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             Analyze Your Website's Accessibility
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-300">
             Enter a URL to analyze its accessibility compliance and get detailed recommendations.
           </p>
         </div>
@@ -39,19 +39,19 @@ const Dashboard = () => {
         <ScanUrlForm onSubmit={handleSubmit} isScanning={isScanning} />
 
         <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <CheckCircle2 className="mr-2 h-5 w-5 text-success-500" />
             <span>WCAG Guidelines</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <CheckCircle2 className="mr-2 h-5 w-5 text-success-500" />
             <span>Performance Metrics</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <CheckCircle2 className="mr-2 h-5 w-5 text-success-500" />
             <span>SEO Impact</span>
           </div>
-          <div className="flex items-center text-sm text-gray-600">
+          <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
             <CheckCircle2 className="mr-2 h-5 w-5 text-success-500" />
             <span>Detailed Reports</span>
           </div>
@@ -69,7 +69,7 @@ const Dashboard = () => {
             <Info className="h-5 w-5 text-primary-600" />
           </div>
           <h3 className="mb-2 text-lg font-medium">Why Accessibility Matters</h3>
-          <p className="mb-4 text-gray-600">
+          <p className="text-gray-600 dark:text-gray-300">
             Web accessibility ensures your content is usable by everyone, including people with disabilities.
           </p>
         </motion.div>
@@ -84,7 +84,7 @@ const Dashboard = () => {
             <AlertTriangle className="h-5 w-5 text-warning-600" />
           </div>
           <h3 className="mb-2 text-lg font-medium">Common Issues</h3>
-          <p className="mb-4 text-gray-600">
+          <p className="mb-4 text-gray-600 dark:text-gray-300">
             Low contrast text, missing alt tags, and keyboard navigation issues are frequent accessibility problems.
           </p>
         </motion.div>
@@ -111,7 +111,7 @@ const Dashboard = () => {
                 <h3 className="ml-4 text-lg font-medium">Enter Your URL</h3>
               </div>
               <div className="ml-14 lg:ml-0 lg:mt-3">
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Enter any website URL to begin the accessibility analysis.
                 </p>
               </div>
@@ -144,7 +144,7 @@ const Dashboard = () => {
                 <h3 className="ml-4 text-lg font-medium">Get Results</h3>
               </div>
               <div className="ml-14 lg:ml-0 lg:mt-3">
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   Receive a detailed report with scores, issues, and specific recommendations for improvement.
                 </p>
               </div>

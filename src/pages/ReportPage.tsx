@@ -509,57 +509,57 @@ const ReportPage: React.FC = () => {
   };
 
   return (
-    <div ref={reportRef} className="container mx-auto p-6 max-w-4xl">
+    <div className="container mx-auto p-6 max-w-4xl" ref={reportRef}>
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-3xl font-bold text-gray-900">
             Accessibility Scan Report
           </h1>
-          {copied && (
-            <div className="mb-4 text-green-600 font-medium">
-              Link copied successfully!
-            </div>
-          )}
           <button
             onClick={copyReportLink}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
           >
             Copy Report Link
           </button>
-
           <div className="relative">
-            <button
-              onClick={() => setShowDownloadMenu(!showDownloadMenu)}
-              className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition"
-            >
-              Download
-            </button>
+          <button
+            onClick={() => setShowDownloadMenu(!showDownloadMenu)}
+            className="px-4 py-2 bg-slate-700 text-white rounded-md hover:bg-slate-800 transition"
+          >
+            Download
+          </button>
 
-            {showDownloadMenu && (
-              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-                <button
-                  onClick={() => {
-                    downloadPDF();
-                    setShowDownloadMenu(false);
-                  }}
-                  className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-700"
-                >
-                  PDF
-                </button>
+          {showDownloadMenu && (
+            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <button
+                onClick={() => {
+                  downloadPDF();
+                  setShowDownloadMenu(false);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-700"
+              >
+                PDF
+              </button>
 
-                <button
-                  onClick={() => {
-                    downloadJSON();
-                    setShowDownloadMenu(false);
-                  }}
-                  className="w-full text-left px-4 py-2 hover:bg-blue-50 text-blue-700"
-                >
-                  JSON
-                </button>
-              </div>
-            )}
-          </div>
+              <button
+                onClick={() => {
+                  downloadJSON();
+                  setShowDownloadMenu(false);
+                }}
+                className="w-full text-left px-4 py-2 hover:bg-blue-50 text-blue-700"
+              >
+                JSON
+              </button>
+            </div>
+          )}
         </div>
+        </div>
+        
+        {copied && (
+          <div className="mb-4 text-green-600 font-medium">
+            Link copied successfully!
+          </div>
+        )}
         {(reportData?.url || urlFromQuery) && (
           <div className="flex items-center space-x-2">
             <span className="text-gray-600 dark:text-gray-300">URL:</span>
@@ -626,14 +626,16 @@ const ReportPage: React.FC = () => {
 
       {reportData && (
         <div className="space-y-8">
-          {currentScore !== undefined && currentScore > 0 && (
-            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+          {currentScore > 0 && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">
                   Overall Accessibility Score
                 </h2>
                 <div
-                  className={`px-4 py-2 rounded-full text-2xl font-bold ${getScoreBadgeColor(currentScore)}`}
+                  className={`px-4 py-2 rounded-full text-2xl font-bold ${getScoreBadgeColor(
+                    currentScore,
+                  )}`}
                 >
                   {currentScore}/100
                 </div>
@@ -660,7 +662,7 @@ const ReportPage: React.FC = () => {
           )}
 
           {reportData.results?.issuesBySeverity && (
-            <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">
                 Issues Summary
               </h2>
@@ -714,7 +716,7 @@ const ReportPage: React.FC = () => {
 
           {reportData.results?.issues &&
             reportData.results.issues.length > 0 && (
-              <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   Issues Found
                 </h2>
@@ -733,7 +735,9 @@ const ReportPage: React.FC = () => {
                                 {issue.title || `Issue ${index + 1}`}
                               </h3>
                               <span
-                                className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadgeStyle(issue.impact || "moderate")}`}
+                                className={`px-2 py-1 text-xs font-medium rounded-full border ${getSeverityBadgeStyle(
+                                  issue.impact || "moderate",
+                                )}`}
                               >
                                 {(issue.impact || "moderate").toUpperCase()}
                               </span>
@@ -812,7 +816,7 @@ const ReportPage: React.FC = () => {
 
           {reportData.results?.issues &&
             reportData.results.issues.length > 0 && (
-              <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   Recommendations
                 </h2>
@@ -855,9 +859,9 @@ const ReportPage: React.FC = () => {
               </div>
             )}
 
-          {reportData && isReportData(reportData) && (
+          {isReportData(reportData) && (
             <>
-              <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">
                   Test Results
                 </h2>
@@ -914,7 +918,7 @@ const ReportPage: React.FC = () => {
               </div>
 
               {reportData.summary && (
-                <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-3">
                     Summary
                   </h2>
@@ -926,7 +930,7 @@ const ReportPage: React.FC = () => {
 
               {reportData.vulnerabilities &&
                 Object.keys(reportData.vulnerabilities).length > 0 && (
-                  <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 p-6">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 p-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                       Detailed Findings
                     </h2>

@@ -222,7 +222,7 @@ const HistoryPage = () => {
             New Scan
           </button>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8">
+        <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 shadow-sm p-8">
           <div className="animate-pulse space-y-4">
             <div className="h-4 bg-gray-200 rounded w-1/4"></div>
             <div className="space-y-2">
@@ -271,12 +271,12 @@ const HistoryPage = () => {
         </div>
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800  rounded-lg border border-gray-200 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+                <Search className="h-4 w-4 text-gray-400 dark:text-gray-500" />
               </div>
               <input
                 type="text"
@@ -388,7 +388,7 @@ const HistoryPage = () => {
                         <span className="text-xs font-medium">{scan.accessibility_score}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
                       {scan.issues_count} {scan.issues_count === 1 ? 'issue' : 'issues'}
                     </td>
                     <td className="px-6 py-4">
@@ -417,7 +417,7 @@ const HistoryPage = () => {
           <div className="py-12 text-center">
             <ExternalLink className="mx-auto h-12 w-12 text-gray-400 mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-1">No scans found</h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               {searchTerm ? `No results found for "${searchTerm}"` : "You haven't performed any scans yet."}
             </p>
             <button 
