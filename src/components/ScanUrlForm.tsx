@@ -21,9 +21,7 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const trimmedUrl = url.trim();
-
-    if (!trimmedUrl) {
+    if (!url) {
       setError('Please enter a URL');
       return;
     }
@@ -34,10 +32,8 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
       processedUrl = `https://${processedUrl}`;
     }
     
-    const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/i;
-    if (!urlPattern.test(processedUrl)) {
-      setError('Please enter a valid website URL (e.g., example.com)');
-      return;
+    if (!/^https?:\/\//i.test(url)) {
+      processedUrl = `https://${url}`;
     }
     
     try {
