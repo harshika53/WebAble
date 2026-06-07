@@ -26,7 +26,11 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
       return;
     }
     
-    let processedUrl = url;
+    let processedUrl = trimmedUrl;
+    
+    if (!/^https?:\/\//i.test(processedUrl)) {
+      processedUrl = `https://${processedUrl}`;
+    }
     
     if (!/^https?:\/\//i.test(url)) {
       processedUrl = `https://${url}`;
