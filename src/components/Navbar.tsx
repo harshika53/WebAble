@@ -30,6 +30,7 @@ export const Navbar = () => {
   const navItems = [
     { to: '/', label: 'Dashboard' },
     { to: '/scan', label: 'New Scan' },
+    { to: '/analytics', label: 'Analytics' },
     { to: '/history', label: 'History' },
   ];
 
