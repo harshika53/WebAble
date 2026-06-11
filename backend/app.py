@@ -19,6 +19,10 @@ app = Flask(__name__)
 # CORS(app)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
+# Register analytics blueprint
+from routes.analytics import analytics_bp
+app.register_blueprint(analytics_bp)
+
 # MongoDB setup
 MONGO_URI = os.environ.get('MONGO_URI', 'mongodb://localhost:27017/')
 if MONGO_URI.startswith('mongodb+srv://') or 'mongodb.net' in MONGO_URI:
