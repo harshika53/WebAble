@@ -41,10 +41,8 @@ async function runLighthouseScan(url) {
   } catch (error) {
     throw error;
   } finally {
-    await chrome.kill();
-    // Increase delay slightly
-    await new Promise(resolve => setTimeout(resolve, 2000));
-  }
+  await chrome.kill();
+}
 }
 
 // Axe-core scan function with isolation
@@ -62,7 +60,7 @@ async function runAxeScan(url) {
 
   try {
     const page = await browser.newPage();
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, { waitUntil: 'networkidle2' });
 
     await page.evaluate(axe.source);
     const results = await page.evaluate(() => axe.run());
@@ -72,7 +70,6 @@ async function runAxeScan(url) {
     throw error;
   } finally {
     await browser.close();
-    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 }
 
@@ -102,8 +99,20 @@ if (require.main === module) {
     }
   })();
 }
+async function scanUrl(url) {
+  const [lighthouseResults, axeResults] =
+    await Promise.all([
+      runLighthouseScan(url),
+      runAxeScan(url)
+    ]);
 
+  return {
+    lighthouse: lighthouseResults,
+    axe: axeResults
+  };
+}
 module.exports = {
   runLighthouseScan,
-  runAxeScan
+  runAxeScan,
+  scanUrl
 };
