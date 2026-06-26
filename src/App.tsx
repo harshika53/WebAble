@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard';
 import ScanPage from './pages/ScanPage';
 import ReportPage from './pages/ReportPage';
 import HistoryPage from './pages/HistoryPage';
+import AnalyticsDashboard from './pages/AnalyticsDashboard';
 import NotFoundPage from './pages/NotFoundPage';
 import { PostHogProvider } from './utils/posthog/PostHogProvider';
 
@@ -16,6 +17,8 @@ function App() {
         <Route path="scan" element={<ScanPage />} />
         <Route path="report/:scanId" element={<ReportPage />} />
         <Route path="report" element={<ReportPage />} />
+        <Route path="analytics" element={<AnalyticsDashboard />} />
+        <Route path="history" element={<HistoryPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
