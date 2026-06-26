@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
+import { captureEvent, captureException } from "../utils/posthog/helpers";
+import { EVENTS } from "../utils/posthog/events";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   AiOutlineFileDone,
@@ -172,6 +174,7 @@ const ReportPage: React.FC = () => {
   const copyReportLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      captureEvent(EVENTS.REPORT_LINK_COPIED, { scan_id: scanId ?? id });
       setCopied(true);
 
       setTimeout(() => {
@@ -231,6 +234,11 @@ const ReportPage: React.FC = () => {
                     : hookResult.date,
               };
               setReportData(normalizedResult);
+              captureEvent(EVENTS.SCAN_COMPLETED, {
+                scan_id: currentScanId,
+                url: hookResult.url,
+                accessibility_score: hookResult.score ?? (hookResult as { results?: { score?: number } }).results?.score,
+              });
               setLoading(false);
               scanInProgress.current = false;
               return;
@@ -324,6 +332,12 @@ const ReportPage: React.FC = () => {
         );
       } catch (err: unknown) {
         console.error("Scan error caught:", err);
+        captureException(err, { scan_id: currentScanId, url: urlFromQuery });
+        captureEvent(EVENTS.SCAN_FAILED, {
+          scan_id: currentScanId,
+          url: urlFromQuery,
+          error_message: err instanceof Error ? err.message : String(err),
+        });
         setReportData(null);
 
         if (
@@ -366,6 +380,15 @@ const ReportPage: React.FC = () => {
       setError("No scan ID or URL provided for report generation.");
     }
   }, [scanId, id, urlFromQuery, fetchReport, navigate, error]);
+
+  useEffect(() => {
+    if (!reportData) return;
+    captureEvent(EVENTS.REPORT_VIEWED, {
+      scan_id: reportData._id ?? reportData.id ?? scanId ?? id,
+      url: reportData.url,
+      accessibility_score: reportData.score,
+    });
+  }, [reportData]);
 
   const getScoreBadgeColor = (score: number): string => {
     if (score >= 90) return "bg-green-100 text-green-800";
@@ -482,6 +505,7 @@ const ReportPage: React.FC = () => {
     }
 
     pdf.save("accessibility-report.pdf");
+    captureEvent(EVENTS.REPORT_DOWNLOADED, { scan_id: scanId ?? id, format: "pdf" });
   };
 
   //download pdf as json logic
@@ -506,6 +530,7 @@ const ReportPage: React.FC = () => {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+    captureEvent(EVENTS.REPORT_DOWNLOADED, { scan_id: scanId ?? id, format: "json" });
   };
 
   return (
@@ -800,6 +825,13 @@ const ReportPage: React.FC = () => {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                    onClick={() =>
+                                      captureEvent(EVENTS.REPORT_ISSUE_FIX_CLICKED, {
+                                        scan_id: scanId ?? id,
+                                        issue_title: issue.title,
+                                        impact: issue.impact,
+                                      })
+                                    }
                                   >
                                     How to Fix this issue Click ME
                                   </a>

@@ -3,6 +3,8 @@ import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useScanner } from '../hooks/useScanner';
+import { captureEvent } from '../utils/posthog/helpers';
+import { EVENTS } from '../utils/posthog/events';
 
 interface ScanUrlFormProps {
   onSubmit?: (url: string) => void;
@@ -39,7 +41,8 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
     try {
       new URL(processedUrl);
       setError('');
-      
+      captureEvent(EVENTS.SCAN_SUBMITTED, { url: processedUrl });
+
       if (onSubmit) {
         onSubmit(processedUrl);
       } else {
