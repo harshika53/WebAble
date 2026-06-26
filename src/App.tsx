@@ -5,10 +5,12 @@ import ScanPage from './pages/ScanPage';
 import ReportPage from './pages/ReportPage';
 import HistoryPage from './pages/HistoryPage';
 import NotFoundPage from './pages/NotFoundPage';
+import { PostHogProvider } from './utils/posthog/PostHogProvider';
 
 function App() {
   return (
-    <Routes>
+    <PostHogProvider>
+      <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Dashboard />} />
         <Route path="scan" element={<ScanPage />} />
@@ -17,6 +19,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
+    </PostHogProvider>
   );
 }
 
