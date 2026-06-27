@@ -1,6 +1,24 @@
 # 🌐 WebAble – Website Accessibility Analyzer
+<div align="center">
 
-WebAble is an **open-source accessibility analysis tool** designed to evaluate the accessibility of websites and web applications. It helps developers identify accessibility issues and improve compliance with **WCAG standards**, ensuring that digital content is usable by everyone — including people with disabilities.
+![WebAble](https://img.shields.io/badge/WebAble-Accessibility%20Analyzer-6C63FF?style=for-the-badge)
+
+![React](https://img.shields.io/badge/React-2026?style=for-the-badge&logo=react&logoColor=61DAFB&color=20232A)
+![TypeScript](https://img.shields.io/badge/TypeScript-2026?style=for-the-badge&logo=typescript&logoColor=3178C6&color=20232A)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-2026?style=for-the-badge&logo=tailwindcss&logoColor=38BDF8&color=20232A)
+
+![Python](https://img.shields.io/badge/Python-Backend?style=for-the-badge&logo=python&logoColor=FFD43B&color=3776AB)
+![Flask](https://img.shields.io/badge/Flask-API?style=for-the-badge&logo=flask&logoColor=white&color=000000)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database?style=for-the-badge&logo=mongodb&logoColor=white&color=47A248)
+
+![Lighthouse](https://img.shields.io/badge/Lighthouse-Audit?style=for-the-badge&logo=lighthouse&logoColor=white&color=F44B21)
+![WCAG](https://img.shields.io/badge/WCAG-Accessibility?style=for-the-badge&color=005A9C)
+![Open Source](https://img.shields.io/badge/Open%20Source-Community?style=for-the-badge&logo=github&color=181717)
+
+</div>
+
+
+**open-source accessibility analysis tool** designed to evaluate the accessibility of websites and web applications. It helps developers identify accessibility issues and improve compliance with **WCAG standards**, ensuring that digital content is usable by everyone — including people with disabilities.
 
 The platform automatically scans websites and generates **detailed accessibility reports**, enabling developers to quickly detect and fix issues affecting usability.
 
@@ -34,23 +52,20 @@ The system provides:
 
 # ✨ Features
 
-### 🔍 Automated Accessibility Scanning
-Analyze any website using **Lighthouse** and **axe-core** to detect accessibility violations.
+# ✨ Key Features
 
-### 📊 Detailed Accessibility Reports
-Generate comprehensive reports including:
-- WCAG compliance
-- Accessibility issue breakdown
-- Severity levels
-- Improvement suggestions
+<div align="center">
 
-### 🕒 Historical Scan Tracking
-Store and review previous scan results to track accessibility improvements over time.
+| Feature | Description |
+|---|---|
+| 🔍 **Automated WCAG Scanning** | Analyze websites using Lighthouse and axe-core to identify accessibility violations |
+| 🤖 **AI Accessibility Agents** | Intelligent agents help detect issues and provide improvement suggestions |
+| 📊 **Detailed Reports** | Generate structured accessibility reports with severity levels and WCAG references |
+| 📈 **Trend Analytics Dashboard** | Track accessibility improvements and monitor website performance over time |
+| 🕒 **Scan History Tracking** | Store previous scans and compare accessibility progress |
+| 🛠️ **Developer-Friendly Insights** | Provide actionable fixes to improve usability and compliance |
 
-### 🗂️ Data Management
-Users can manage or delete scan reports when required.
-
----
+</div>
 
 # 🛠️ Tech Stack
 
@@ -122,30 +137,34 @@ MONGO_URI=your_mongodb_connection_string
 
 ## 📂 Project Structure
 ```
-WebAble
+WebAble/
 │
-├── backend/                    # Flask backend and scanning services
-│   ├── app.py
-│   ├── server.js
-│   ├── scan_service.js
-│   └── requirements.txt
+├── .agents/
+│ └── skills/ # AI agent skills and configurations
 │
-├── public/                     # Static assets
-│   └── Dashboard.png
+├── backend/ # Flask backend and scanning services
+│ ├── app.py # Backend entry point
+│ ├── server.js # Server configuration
+│ ├── scan_service.js # Accessibility scanning logic
+│ └── requirements.txt # Python dependencies
 │
-├── src/                        # Frontend source code
-│   ├── components/
-│   ├── hooks/
-│   ├── pages/
-│   ├── services/
-│   ├── utils/
-│   ├── App.tsx
-│   └── main.tsx
+├── public/ # Static assets
+│ └── Dashboard.png
 │
-├── index.html
-├── package.json
-└── README.md
-```
+├── src/ # React frontend source code
+│ │
+│ ├── components/ # Reusable UI components
+│ ├── hooks/ # Custom React hooks
+│ ├── pages/ # Application pages
+│ ├── services/ # API services
+│ ├── utils/ # Helper utilities
+│ │
+│ ├── App.tsx # Main React component
+│ └── main.tsx # Frontend entry point
+│
+├── index.html # HTML template
+├── package.json # Project dependencies
+└── README.md # Documentation
 
 ---
 
