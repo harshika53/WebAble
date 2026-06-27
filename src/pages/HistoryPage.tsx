@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { captureEvent } from '../utils/posthog/helpers';
+import { EVENTS } from '../utils/posthog/events';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -35,7 +37,6 @@ const HistoryPage = () => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [selectedScans, setSelectedScans] = useState<string[]>([]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
   // Fetch scan history from backend
   const fetchScanHistory = async () => {
     try {
@@ -126,7 +127,14 @@ const HistoryPage = () => {
 
   // Handle search
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
+    const value = e.target.value;
+    setSearchTerm(value);
+    if (value.length > 2) {
+      captureEvent(EVENTS.HISTORY_SEARCHED, {
+        search_term: value,
+        result_count: scanHistory.filter(s => s.url.toLowerCase().includes(value.toLowerCase())).length,
+      });
+    }
   };
 
   // Toggle sort order
@@ -162,6 +170,7 @@ const HistoryPage = () => {
     const success = await deleteScansFromBackend(selectedScans);
     
     if (success) {
+      captureEvent(EVENTS.HISTORY_SCANS_DELETED, { deleted_count: selectedScans.length });
       // Remove from local state
       setScanHistory(prev => prev.filter(scan => !selectedScans.includes(scan.id)));
       setSelectedScans([]);

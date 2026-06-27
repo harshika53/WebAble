@@ -1,5 +1,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
+import { captureEvent, captureException } from "../utils/posthog/helpers";
+import { EVENTS } from "../utils/posthog/events";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import {
   AiOutlineFileDone,
@@ -331,6 +333,7 @@ const ReportPage: React.FC = () => {
   const copyReportLink = async () => {
     try {
       await navigator.clipboard.writeText(window.location.href);
+      captureEvent(EVENTS.REPORT_LINK_COPIED, { scan_id: scanId ?? id });
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
@@ -380,6 +383,11 @@ const ReportPage: React.FC = () => {
                     : hookResult.date,
               };
               setReportData(normalizedResult);
+              captureEvent(EVENTS.SCAN_COMPLETED, {
+                scan_id: currentScanId,
+                url: hookResult.url,
+                accessibility_score: hookResult.score ?? (hookResult as { results?: { score?: number } }).results?.score,
+              });
               setLoading(false);
               scanInProgress.current = false;
               return;
@@ -459,6 +467,12 @@ const ReportPage: React.FC = () => {
         throw new Error("No valid scan ID or URL provided for report generation.");
       } catch (err: unknown) {
         console.error("Scan error caught:", err);
+        captureException(err, { scan_id: currentScanId, url: urlFromQuery });
+        captureEvent(EVENTS.SCAN_FAILED, {
+          scan_id: currentScanId,
+          url: urlFromQuery,
+          error_message: err instanceof Error ? err.message : String(err),
+        });
         setReportData(null);
 
         if (currentScanId && (currentScanId.startsWith("http") || currentScanId.includes("."))) {
@@ -491,9 +505,14 @@ const ReportPage: React.FC = () => {
     }
   }, [scanId, id, urlFromQuery, fetchReport, navigate, error]);
 
-
-
-  
+  useEffect(() => {
+    if (!reportData) return;
+    captureEvent(EVENTS.REPORT_VIEWED, {
+      scan_id: reportData._id ?? reportData.id ?? scanId ?? id,
+      url: reportData.url,
+      accessibility_score: reportData.score,
+    });
+  }, [reportData]);
 
   const getScoreBadgeColor = (score: number): string => {
     if (score >= 90) return "bg-green-100 text-green-800";
@@ -581,6 +600,7 @@ const ReportPage: React.FC = () => {
       heightLeft -= pageHeight;
     }
     pdf.save("accessibility-report.pdf");
+    captureEvent(EVENTS.REPORT_DOWNLOADED, { scan_id: scanId ?? id, format: "pdf" });
   };
 
   const downloadJSON = () => {
@@ -594,6 +614,7 @@ const ReportPage: React.FC = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    captureEvent(EVENTS.REPORT_DOWNLOADED, { scan_id: scanId ?? id, format: "json" });
   };
 
   return (
