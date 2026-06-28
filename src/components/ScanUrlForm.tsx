@@ -3,8 +3,6 @@ import { Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useScanner } from '../hooks/useScanner';
-import { captureEvent } from '../utils/posthog/helpers';
-import { EVENTS } from '../utils/posthog/events';
 
 interface ScanUrlFormProps {
   onSubmit?: (url: string) => void;
@@ -23,7 +21,9 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!url) {
+    const trimmedUrl = url.trim();
+    
+    if (!trimmedUrl) {
       setError('Please enter a URL');
       return;
     }
@@ -34,15 +34,10 @@ const ScanUrlForm = ({ onSubmit, isScanning: externalIsScanning, disabled }: Sca
       processedUrl = `https://${processedUrl}`;
     }
     
-    if (!/^https?:\/\//i.test(url)) {
-      processedUrl = `https://${url}`;
-    }
-    
     try {
       new URL(processedUrl);
       setError('');
-      captureEvent(EVENTS.SCAN_SUBMITTED, { url: processedUrl });
-
+      
       if (onSubmit) {
         onSubmit(processedUrl);
       } else {
