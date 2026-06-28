@@ -176,6 +176,19 @@ def recent_scans():
         return jsonify(recent), 200
     except Exception: return jsonify({"error": "Failed to retrieve recent scans"}), 500
 
+@app.route('/api/scans/delete', methods=['DELETE'])
+@cross_origin()
+def delete_scans():
+    try:
+        data = request.get_json(silent=True) or {}
+        ids = data.get('ids', [])
+        if not ids:
+            return jsonify({"error": "No IDs provided"}), 400
+        result = scans_collection.delete_many({"id": {"$in": ids}})
+        return jsonify({"deleted": result.deleted_count}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 def run_accessibility_scan(url):
     try:
         # Create a unique ID for this specific scan instance
